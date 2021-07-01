@@ -13,9 +13,16 @@ typechain/
 profiles/
 docs/
 deployments/
+.nyc_output/
+.idea/
 # files
 *.env
 *.log
 *.tsbuildinfo
 coverage.json
 npm-debug.log*
+package-lock.json
+.DS_Store
+
+.env
+.npmrc
