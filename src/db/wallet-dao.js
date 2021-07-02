@@ -1,8 +1,9 @@
 const queries = require('./queries');
+const adapter = require('./result-adapter');
 
 const WALLETS_TABLE = 'WALLETS';
 
-const SELECT = 'SELECT id, address, private_key ' + WALLETS_TABLE;
+const SELECT = 'SELECT id, address, private_key FROM ' + WALLETS_TABLE;
 
 const SELECT_BY_ID = SELECT + ' WHERE id = $1';
 
@@ -32,7 +33,7 @@ const select = () => {
     queries.executeQueryWithParams(SELECT, [
     ])
       .then((results) => {
-        resolve(results);
+        resolve(adapter.adaptWallets(results));
       })
       .catch((err) => {
         reject(err);
@@ -45,7 +46,7 @@ const selectById = (id) => {
     queries.executeQueryWithParams(SELECT_BY_ID, [id
     ])
       .then((results) => {
-        resolve(adaptWallet(results));
+        resolve(adapter.adaptWallet(results));
       })
       .catch((err) => {
         reject(err);

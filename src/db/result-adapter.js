@@ -41,11 +41,12 @@ const adaptWallet = () => (result) => {
   return null;
 }
 
-const adaptWallets = () => (result) => {
+const adaptWallets = (result) => {
   let wallets = [];
   for (let i = 0; i < result.rows.length; i++) {
     wallets.push(convertWallet(result.rows[i]));
   }
+  console.dir(wallets);
   return wallets;
 }
 
@@ -58,4 +59,4 @@ const convertWallet = () => (walletDBO) => {
   }
 }
 
-
+module.exports = {adaptProject, adaptProjects, adaptWallet, adaptWallets}

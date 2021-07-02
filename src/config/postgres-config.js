@@ -1,7 +1,7 @@
-const app = require('config');
+const app = require('./config');
 
 const { Pool } = require('pg');
-const databaseUrl = app.datasource;
+const databaseUrl = app.datasource.databaseUrl;
 
 const connection = {
 	connectionString: databaseUrl,
