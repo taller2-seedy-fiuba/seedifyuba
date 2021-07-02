@@ -1,22 +1,21 @@
 const queries = require('./queries');
 
-const PROJECTS_TABLE = 'PROJECTS';
+const REVIEWS_TABLE = 'WALLETS';
 
-const SELECT = 'SELECT id, hash, owner_id ' + PROJECTS_TABLE;
+const SELECT = 'SELECT project_id, reviewer_id ' + REVIEWS_TABLE;
 
 const SELECT_BY_ID = SELECT + ' WHERE id = $1';
 
 const INSERT =
   'INSERT INTO ' +
-  PROJECTS_TABLE +
-  ' (id, hash, owner_id) VALUES ($1, $2, $3)';
+  REVIEWS_TABLE +
+  ' (project_id, reviewer_id) VALUES ($1, $2)';
 
 const insert = (project) => {
   return new Promise((resolve, reject) => {
     queries.executeQueryWithParams(INSERT, [
-      project.projectId,
-      project.hash,
-      project.projectOwnerAddress
+      project.id,
+      project.projectReviewerAddress
     ])
       .then((results) => {
         resolve(results);
