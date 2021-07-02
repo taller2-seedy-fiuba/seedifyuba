@@ -14,7 +14,7 @@ const INSERT =
 const insert = (stage) => {
   return new Promise((resolve, reject) => {
     queries.executeQueryWithParams(INSERT, [
-      stage.project_id,
+      stage.projectId,
       stage.number,
       stage.cost
     ])
