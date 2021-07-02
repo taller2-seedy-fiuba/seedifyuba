@@ -1,4 +1,4 @@
-const adaptProject = () => (result) => {
+const adaptProject = (result) => {
   if(result.rows.length === 1){
     const projectDBO = result.rows[0];
     return convertProject(projectDBO);
@@ -14,7 +14,7 @@ const adaptProject = () => (result) => {
   return null;
 }
 
-const adaptProjects = () => (result) => {
+const adaptProjects = (result) => {
   let projects = [];
   for (let i = 0; i < result.rows.length; i++) {
     projects.push(convertProject(result.rows[i]));
@@ -22,7 +22,7 @@ const adaptProjects = () => (result) => {
   return projects;
 }
 
-const convertProject = () => (projectDBO) => {
+const convertProject = (projectDBO) => {
   if(!projectDBO) return null;
   return {
     id: projectDBO['id'],
@@ -33,7 +33,7 @@ const convertProject = () => (projectDBO) => {
   }
 }
 
-const adaptWallet = () => (result) => {
+const adaptWallet = (result) => {
   if(result.rows.length === 1){
     const walletDBO = result.rows[0];
     return convertWallet(walletDBO);
@@ -46,11 +46,10 @@ const adaptWallets = (result) => {
   for (let i = 0; i < result.rows.length; i++) {
     wallets.push(convertWallet(result.rows[i]));
   }
-  console.dir(wallets);
   return wallets;
 }
 
-const convertWallet = () => (walletDBO) => {
+const convertWallet = (walletDBO) => {
   if(!walletDBO) return null;
   return {
     id: walletDBO['id'],

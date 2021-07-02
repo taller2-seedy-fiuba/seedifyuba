@@ -10,10 +10,7 @@ const createWallet = () => async () => {
   const provider = new ethers.providers.InfuraProvider("kovan", process.env.INFURA_API_KEY);
   // This may break in some environments, keep an eye on it
   const wallet = ethers.Wallet.createRandom().connect(provider);
-  let walletCreated = {};
-  walletDao.insert(wallet).then(walletDB => {
-    walletCreated = walletDB
-  });
+  let walletCreated = await walletDao.insert(wallet);
   const result = {
     id: walletCreated.id,
     address: walletCreated.address,
@@ -27,7 +24,6 @@ const getWalletsData = () => async () => {
   walletDao.select().then(walletsDB => {
     wallets = walletsDB
   });
-  console.dir(wallets);
   return wallets;
 };
 

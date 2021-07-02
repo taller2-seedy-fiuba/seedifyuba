@@ -10,17 +10,16 @@ const SELECT_BY_ID = SELECT + ' WHERE id = $1';
 const INSERT =
   'INSERT INTO ' +
   WALLETS_TABLE +
-  ' (id, address, private_key) VALUES ($1, $2, $3)';
+  ' (address, private_key) VALUES ($1, $2) RETURNING *';
 
 const insert = (wallet) => {
   return new Promise((resolve, reject) => {
     queries.executeQueryWithParams(INSERT, [
-      wallet.id,
       wallet.address,
       wallet.privateKey
     ])
       .then((results) => {
-        resolve(results);
+        resolve(adapter.adaptWallet(results));
       })
       .catch((err) => {
         reject(err);
