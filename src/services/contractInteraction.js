@@ -1,5 +1,8 @@
 const BigNumber = require("bignumber.js");
 const ethers = require("ethers");
+const projectDao = require('../db/project-dao');
+const stageDao = require('../db/stage-dao');
+const reviewDao = require('../db/review-dao');
 
 const getContract = (config, wallet) => {
   return new ethers.Contract(config.contractAddress, config.contractAbi, wallet);
@@ -27,18 +30,35 @@ const createProject = ({ config }) => async (
     if (firstEvent && firstEvent.event == "ProjectCreated") {
       const projectId = firstEvent.args.projectId.toNumber();
       console.log();
-      projects[tx.hash] = {
-        projectId,
-        stagesCost,
-        projectOwnerAddress,
-        projectReviewerAddress,
-      };
+      const project = {
+        projectId: projectId,
+        hash: tx.hash,
+        stagesCost: stagesCost,
+        projectOwnerAddress: projectOwnerAddress,
+        projectReviewerAddress: projectReviewerAddress
+      }
+      const projectCreated = addProject(project);
     } else {
       console.error(`Project not created in tx ${tx.hash}`);
     }
   });
   return tx;
 };
+
+const addProject = () => async project => {
+  const projectCreated = await projectDao.insert(project);
+  let number = 1;
+  await project.stagesCost.forEach(stageCost => {
+    stageDao.insert({
+      projectId: project.projectId,
+      number: number,
+      cost: stageCost
+    });
+    number = number + 1;
+  });
+  await reviewDao.insert(project);
+  return projectCreated;
+}
 
 const getProject = () => async id => {
   console.log(`Getting project ${id}: ${projects[id]}`);

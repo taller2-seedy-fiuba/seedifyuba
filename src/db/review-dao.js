@@ -52,4 +52,4 @@ const selectById = (id) => {
   });
 }
 
-
+module.exports = { insert, select, selectById };
