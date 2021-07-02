@@ -31,7 +31,7 @@ const insert = (project) => {
       project.projectOwnerAddress
     ])
       .then((results) => {
-        resolve(results);
+        resolve(adaptProject(results));
       })
       .catch((err) => {
         reject(err);
@@ -44,7 +44,7 @@ const select = () => {
     queries.executeQueryWithParams(SELECT, [
     ])
       .then((results) => {
-        resolve(results);
+        resolve(adaptProjects(results));
       })
       .catch((err) => {
         reject(err);
@@ -59,7 +59,7 @@ const selectById = (id, details) => {
     queries.executeQueryWithParams(query, [id
     ])
       .then((results) => {
-        resolve(results);
+        resolve(adaptProject(results));
       })
       .catch((err) => {
         reject(err);
