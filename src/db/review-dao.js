@@ -1,6 +1,6 @@
 const queries = require('./queries');
 
-const REVIEWS_TABLE = 'WALLETS';
+const REVIEWS_TABLE = 'REVIEWS';
 
 const SELECT = 'SELECT project_id, reviewer_id ' + REVIEWS_TABLE;
 
