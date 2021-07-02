@@ -45,7 +45,7 @@ const selectById = (id) => {
     queries.executeQueryWithParams(SELECT_BY_ID, [id
     ])
       .then((results) => {
-        resolve(results);
+        resolve(adaptWallet(results));
       })
       .catch((err) => {
         reject(err);
