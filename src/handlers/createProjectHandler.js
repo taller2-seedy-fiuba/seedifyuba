@@ -23,11 +23,15 @@ function schema() {
 function handler({ contractInteraction, walletService }) {
   console.log('Handling request to create project');
   return async function (req) {
+    let walletDeployer = await walletService.getDeployerWallet();
+    let stagesCost = req.body.stagesCost;
+    let ownerWalletData = await walletService.getWalletData(req.body.ownerId);
+    let reviewerWalletData = await walletService.getWalletData(req.body.ownerId);
     return contractInteraction.createProject(
-      walletService.getDeployerWallet(),
-      req.body.stagesCost,
-      walletService.getWalletData(req.body.ownerId).address,
-      walletService.getWalletData(req.body.reviewerId).address,
+      walletDeployer,
+      stagesCost,
+      ownerWalletData.address,
+      reviewerWalletData.address,
     );
   };
 }

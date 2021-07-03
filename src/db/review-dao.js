@@ -9,12 +9,12 @@ const SELECT_BY_ID = SELECT + ' WHERE id = $1';
 const INSERT =
   'INSERT INTO ' +
   REVIEWS_TABLE +
-  ' (project_id, reviewer_id) VALUES ($1, $2)';
+  ' (project_id, reviewer_address) VALUES ($1, $2)';
 
 const insert = (project) => {
   return new Promise((resolve, reject) => {
     queries.executeQueryWithParams(INSERT, [
-      project.id,
+      project.projectId,
       project.projectReviewerAddress
     ])
       .then((results) => {

@@ -12,7 +12,7 @@ const SELECT_BY_ID = SELECT + ' WHERE id = $1';
 const INSERT =
   'INSERT INTO ' +
   PROJECTS_TABLE +
-  ' (hash, owner_address) VALUES ($1, $2) RETURNING *';
+  ' (id, hash, owner_address) VALUES ($1, $2, $3) RETURNING *';
 
 const SELECT_WITH_DETAILS =
   'SELECT P.id, P.hash, P.owner_address, S.project_id, S.number, S.cost, R.project_id, R.reviewer_address' +

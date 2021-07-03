@@ -2,6 +2,7 @@ const ethers = require("ethers");
 const walletDao = require('../db/wallet-dao');
 
 const getDeployerWallet = ({ config }) => () => {
+  console.log("Getting Deployer Wallet");
   const provider = new ethers.providers.InfuraProvider(config.network, config.infuraApiKey);
   return ethers.Wallet.fromMnemonic(config.deployerMnemonic).connect(provider);
 };
@@ -28,6 +29,8 @@ const getWalletsData = () => async () => {
 const getWalletData = () => async id => {
   console.log("Getting Wallet Data with id ["+id+"]");
   let wallet = await walletDao.selectById(id);
+  console.log("Wallet Data found");
+  console.dir(wallet);
   return wallet;
 };
 

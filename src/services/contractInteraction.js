@@ -21,18 +21,16 @@ const createProject = ({ config }) => async (
   projectOwnerAddress,
   projectReviewerAddress,
 ) => {
-  console.log("Creating project with ");
+  console.log("Creating project with costs {"+stagesCost+"}, owner address ["+projectOwnerAddress+"] and reviewer address ["+projectReviewerAddress+"]");
   const bookBnb = await getContract(config, deployerWallet);
-  console.log("Step 1");
   const tx = await bookBnb.createProject(stagesCost.map(toWei), projectOwnerAddress, projectReviewerAddress);
-  console.log("Step 1");
   tx.wait(1).then(receipt => {
     console.log("Transaction mined");
     const firstEvent = receipt && receipt.events && receipt.events[0];
     console.log(firstEvent);
     if (firstEvent && firstEvent.event == "ProjectCreated") {
       const projectId = firstEvent.args.projectId.toNumber();
-      console.log();
+      console.log("project id ["+projectId+"]");
       const project = {
         projectId: projectId,
         hash: tx.hash,
@@ -40,7 +38,7 @@ const createProject = ({ config }) => async (
         projectOwnerAddress: projectOwnerAddress,
         projectReviewerAddress: projectReviewerAddress
       }
-      const projectCreated = addProject(project);
+      addProject(project);
     } else {
       console.error(`Project not created in tx ${tx.hash}`);
     }
@@ -48,19 +46,24 @@ const createProject = ({ config }) => async (
   return tx;
 };
 
-const addProject = () => async project => {
-  const projectCreated = await projectDao.insert(project);
-  let number = 1;
-  await project.stagesCost.forEach(stageCost => {
-    stageDao.insert({
-      projectId: project.projectId,
-      number: number,
-      cost: stageCost
+const addProject = (project) => {
+  console.log("Saving project into database");
+  projectDao.insert(project).then(projectCreated => {
+    let number = 1;
+    project.stagesCost.forEach(stageCost => {
+      stageDao.insert({
+        projectId: project.projectId,
+        number: number,
+        cost: stageCost
+      }).then(reviewer =>{
+        //Nothing to do
+      });
+      number = number + 1;
     });
-    number = number + 1;
+    reviewDao.insert(project).then(reviewer =>{
+      //Nothing to do
+    });
   });
-  await reviewDao.insert(project);
-  return projectCreated;
 }
 
 const getProject = () => async id => {
