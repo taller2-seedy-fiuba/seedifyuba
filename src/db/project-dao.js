@@ -7,14 +7,7 @@ const REVIEWS_TABLE = 'REVIEWS AS R';
 
 const SELECT = 'SELECT id, hash, owner_address ' + PROJECTS_TABLE;
 
-const SELECT_BY_ID = SELECT + ' WHERE id = $1';
-
-const INSERT =
-  'INSERT INTO ' +
-  PROJECTS_TABLE +
-  ' (id, hash, owner_address) VALUES ($1, $2, $3) RETURNING *';
-
-const SELECT_WITH_DETAILS =
+const SELECT_BY_ID =
   'SELECT P.id, P.hash, P.owner_address, S.project_id, S.number, S.cost, R.project_id, R.reviewer_address' +
   ' FROM ' +
   PROJECTS_TABLE +
@@ -23,6 +16,11 @@ const SELECT_WITH_DETAILS =
   ' , ' +
   REVIEWS_TABLE +
   ' WHERE P.id = S.project_id AND P.id = R.project_id AND P.id = $1';
+
+const INSERT =
+  'INSERT INTO ' +
+  PROJECTS_TABLE +
+  ' (id, hash, owner_address) VALUES ($1, $2, $3) RETURNING *';
 
 const insert = (project) => {
   return new Promise((resolve, reject) => {
@@ -53,11 +51,9 @@ const select = () => {
   });
 }
 
-const selectById = (id, details) => {
+const selectById = (id) => {
   return new Promise((resolve, reject) => {
-    let query = SELECT_BY_ID;
-    if (details) query = SELECT_WITH_DETAILS;
-    queries.executeQueryWithParams(query, [id
+    queries.executeQueryWithParams(SELECT_BY_ID, [id
     ])
       .then((results) => {
         resolve(adapter.adaptProject(results));

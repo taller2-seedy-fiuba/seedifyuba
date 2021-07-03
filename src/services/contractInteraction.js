@@ -68,7 +68,8 @@ const addProject = (project) => {
 
 const getProject = () => async id => {
   console.log(`Getting project ${id}: ${projects[id]}`);
-  return projects[id];
+  let project = await projectDao.selectById(id);
+  return project;
 };
 
 module.exports = dependencies => ({
