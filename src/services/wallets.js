@@ -7,10 +7,12 @@ const getDeployerWallet = ({ config }) => () => {
   return ethers.Wallet.fromMnemonic(config.deployerMnemonic).connect(provider);
 };
 
-const createWallet = () => async () => {
+const createWallet = () => async ownerId => {
+  console.log("Creating Wallet for ownerId ["+ownerId+"]");
   const provider = new ethers.providers.InfuraProvider("kovan", process.env.INFURA_API_KEY);
   // This may break in some environments, keep an eye on it
   const wallet = ethers.Wallet.createRandom().connect(provider);
+  wallet.id = ownerId;
   let walletCreated = await walletDao.insert(wallet);
   const result = {
     id: walletCreated.id,
