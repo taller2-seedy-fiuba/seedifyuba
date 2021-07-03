@@ -1,7 +1,7 @@
 const pool = require('../config/postgres-config');
 
 const executeQueryWithParams = (query, params) => {
-    console.log('Ejecutando query [' + query + '] con params [' + params + ']');
+    console.log('Executing query [' + query + '] with params [' + params + ']');
     return new Promise((resolve, reject) => {
         pool.connect().then((client) => {
             return client

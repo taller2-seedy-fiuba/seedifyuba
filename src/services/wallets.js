@@ -20,27 +20,23 @@ const createWallet = () => async () => {
 };
 
 const getWalletsData = () => async () => {
-  let wallets = []
-  walletDao.select().then(walletsDB => {
-    wallets = walletsDB
-  });
+  console.log("Getting Wallets Data");
+  let wallets = await walletDao.select();
   return wallets;
 };
 
 const getWalletData = () => async id => {
-  let wallet;
-  walletDao.selectById(id).then(walletDB => {
-    wallet = walletDB;
-  });
+  console.log("Getting Wallet Data with id ["+id+"]");
+  let wallet = await walletDao.selectById(id);
   return wallet;
 };
 
 const getWallet = ({}) => async id => {
+  console.log("Getting Wallet with id ["+id+"]");
   const provider = new ethers.providers.InfuraProvider("kovan", process.env.INFURA_API_KEY);
-  let wallet;
-  walletDao.selectById(id).then(walletDB => {
-    wallet = walletDB;
-  });
+  let wallet = await walletDao.selectById(id);
+  console.log("Wallet found");
+  console.dir(wallet);
   return new ethers.Wallet(wallet.privateKey, provider);
 };
 

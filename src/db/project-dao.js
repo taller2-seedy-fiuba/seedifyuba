@@ -1,4 +1,5 @@
 const queries = require('./queries');
+const adapter = require('./result-adapter');
 
 const PROJECTS_TABLE = 'PROJECTS AS P';
 const STAGES_TABLE = 'STAGES AS S';
@@ -11,7 +12,7 @@ const SELECT_BY_ID = SELECT + ' WHERE id = $1';
 const INSERT =
   'INSERT INTO ' +
   PROJECTS_TABLE +
-  ' (id, hash, owner_address) VALUES ($1, $2, $3)';
+  ' (hash, owner_address) VALUES ($1, $2) RETURNING *';
 
 const SELECT_WITH_DETAILS =
   'SELECT P.id, P.hash, P.owner_address, S.project_id, S.number, S.cost, R.project_id, R.reviewer_address' +
@@ -31,7 +32,7 @@ const insert = (project) => {
       project.projectOwnerAddress
     ])
       .then((results) => {
-        resolve(adaptProject(results));
+        resolve(adapter.adaptProject(results));
       })
       .catch((err) => {
         reject(err);
@@ -44,7 +45,7 @@ const select = () => {
     queries.executeQueryWithParams(SELECT, [
     ])
       .then((results) => {
-        resolve(adaptProjects(results));
+        resolve(adapter.adaptProjects(results));
       })
       .catch((err) => {
         reject(err);
@@ -59,7 +60,7 @@ const selectById = (id, details) => {
     queries.executeQueryWithParams(query, [id
     ])
       .then((results) => {
-        resolve(adaptProject(results));
+        resolve(adapter.adaptProject(results));
       })
       .catch((err) => {
         reject(err);

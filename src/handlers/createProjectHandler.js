@@ -21,6 +21,7 @@ function schema() {
 }
 
 function handler({ contractInteraction, walletService }) {
+  console.log('Handling request to create project');
   return async function (req) {
     return contractInteraction.createProject(
       walletService.getDeployerWallet(),
