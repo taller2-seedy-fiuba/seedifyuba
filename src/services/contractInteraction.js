@@ -1,5 +1,8 @@
 const BigNumber = require("bignumber.js");
 const ethers = require("ethers");
+const projectDao = require('../db/project-dao');
+const stageDao = require('../db/stage-dao');
+const reviewDao = require('../db/review-dao');
 
 const getContract = (config, wallet) => {
   return new ethers.Contract(config.contractAddress, config.contractAbi, wallet);
@@ -18,6 +21,7 @@ const createProject = ({ config }) => async (
   projectOwnerAddress,
   projectReviewerAddress,
 ) => {
+  console.log("Creating project with costs {"+stagesCost+"}, owner address ["+projectOwnerAddress+"] and reviewer address ["+projectReviewerAddress+"]");
   const bookBnb = await getContract(config, deployerWallet);
   const tx = await bookBnb.createProject(stagesCost.map(toWei), projectOwnerAddress, projectReviewerAddress);
   tx.wait(1).then(receipt => {
@@ -26,13 +30,15 @@ const createProject = ({ config }) => async (
     console.log(firstEvent);
     if (firstEvent && firstEvent.event == "ProjectCreated") {
       const projectId = firstEvent.args.projectId.toNumber();
-      console.log();
-      projects[tx.hash] = {
-        projectId,
-        stagesCost,
-        projectOwnerAddress,
-        projectReviewerAddress,
-      };
+      console.log("project id ["+projectId+"]");
+      const project = {
+        projectId: projectId,
+        hash: tx.hash,
+        stagesCost: stagesCost,
+        projectOwnerAddress: projectOwnerAddress,
+        projectReviewerAddress: projectReviewerAddress
+      }
+      addProject(project);
     } else {
       console.error(`Project not created in tx ${tx.hash}`);
     }
@@ -40,9 +46,30 @@ const createProject = ({ config }) => async (
   return tx;
 };
 
+const addProject = (project) => {
+  console.log("Saving project into database");
+  projectDao.insert(project).then(projectCreated => {
+    let number = 1;
+    project.stagesCost.forEach(stageCost => {
+      stageDao.insert({
+        projectId: project.projectId,
+        number: number,
+        cost: stageCost
+      }).then(reviewer =>{
+        //Nothing to do
+      });
+      number = number + 1;
+    });
+    reviewDao.insert(project).then(reviewer =>{
+      //Nothing to do
+    });
+  });
+}
+
 const getProject = () => async id => {
   console.log(`Getting project ${id}: ${projects[id]}`);
-  return projects[id];
+  let project = await projectDao.selectById(id);
+  return project;
 };
 
 module.exports = dependencies => ({
