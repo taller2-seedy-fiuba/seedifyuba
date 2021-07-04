@@ -23,6 +23,6 @@ coverage.json
 npm-debug.log*
 package-lock.json
 .DS_Store
-
 .env
 .npmrc
+.package-lock.json
