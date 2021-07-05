@@ -9,7 +9,7 @@ COPY . .
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
-RUN deploy kovan
+RUN npm run deploy-kovan
 RUN npm install
 
 #Ignored by heroku
