@@ -21,7 +21,6 @@ function schema() {
 }
 
 function handler({ contractInteraction, walletService }) {
-  console.log('Handling request to create project');
   return async function (req) {
     let walletDeployer = await walletService.getDeployerWallet();
     let stagesCost = req.body.stagesCost;
