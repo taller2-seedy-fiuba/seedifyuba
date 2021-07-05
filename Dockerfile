@@ -9,8 +9,10 @@ COPY . .
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
-RUN npm run deploy-kovan
 RUN npm install
+
+#Deploy SmartContract in Kovan
+RUN npm run deploy-kovan
 
 #Ignored by heroku
 EXPOSE 5000
