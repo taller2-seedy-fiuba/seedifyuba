@@ -13,7 +13,7 @@ RUN npm run deploy-kovan
 RUN npm install
 
 #Ignored by heroku
-EXPOSE 4000
+EXPOSE 5000
 
 #Start app
 CMD [ "npm", "start" ]
