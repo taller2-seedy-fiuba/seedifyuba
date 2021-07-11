@@ -1,31 +1,41 @@
-const getWalletData = require("./handlers/getWalletHandler");
+const getWallet = require("./handlers/getWalletHandler");
+const getWalletData = require("./handlers/getWalletDataHandler");
 const getWalletsData = require("./handlers/getWalletsHandler");
 const createWallet = require("./handlers/createWalletHandler");
 const createProject = require("./handlers/createProjectHandler");
 const getProject = require("./handlers/getProjectHandler");
 
-function getWalletDataRoute({ services, config }) {
-  return {
-    method: "GET",
-    url: "/wallet/:id",
-    schema: getWalletData.schema(config),
-    handler: getWalletData.handler({ config, ...services }),
-  };
-}
-
 function getWalletsDataRoute({ services, config }) {
   return {
     method: "GET",
-    url: "/wallet",
+    url: "/wallets",
     schema: getWalletsData.schema(config),
     handler: getWalletsData.handler({ config, ...services }),
+  };
+}
+
+function getWalletRoute({ services, config }) {
+  return {
+    method: "GET",
+    url: "/wallets/:id",
+    schema: getWallet.schema(config),
+    handler: getWallet.handler({ config, ...services }),
+  };
+}
+
+function getWalletDataRoute({ services, config }) {
+  return {
+    method: "GET",
+    url: "/wallets/:id/data",
+    schema: getWalletData.schema(config),
+    handler: getWalletData.handler({ config, ...services }),
   };
 }
 
 function createWalletRoute({ services, config }) {
   return {
     method: "POST",
-    url: "/wallet",
+    url: "/wallets",
     schema: createWallet.schema(config),
     handler: createWallet.handler({ config, ...services }),
   };
@@ -34,7 +44,7 @@ function createWalletRoute({ services, config }) {
 function createProjectRoute({ services, config }) {
   return {
     method: "POST",
-    url: "/project",
+    url: "/projects",
     schema: createProject.schema(config),
     handler: createProject.handler({ config, ...services }),
   };
@@ -43,10 +53,10 @@ function createProjectRoute({ services, config }) {
 function getProjectRoute({ services, config }) {
   return {
     method: "GET",
-    url: "/project/:id",
+    url: "/projects/:id",
     schema: getProject.schema(config),
     handler: getProject.handler({ config, ...services }),
   };
 }
 
-module.exports = [getWalletDataRoute, getWalletsDataRoute, createWalletRoute, createProjectRoute, getProjectRoute];
+module.exports = [getWalletRoute, getWalletDataRoute, getWalletsDataRoute, createWalletRoute, createProjectRoute, getProjectRoute];
