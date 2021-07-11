@@ -13,8 +13,6 @@ const toWei = number => {
   return BigNumber(number).times(WEIS_IN_ETHER).toFixed();
 };
 
-const projects = {};
-
 const createProject = ({ config }) => async (
   deployerWallet,
   stagesCost,
@@ -22,8 +20,8 @@ const createProject = ({ config }) => async (
   projectReviewerAddress,
 ) => {
   console.log("Creating project with costs {"+stagesCost+"}, owner address ["+projectOwnerAddress+"] and reviewer address ["+projectReviewerAddress+"]");
-  const bookBnb = await getContract(config, deployerWallet);
-  const tx = await bookBnb.createProject(stagesCost.map(toWei), projectOwnerAddress, projectReviewerAddress);
+  const seedyFiuba = await getContract(config, deployerWallet);
+  const tx = await seedyFiuba.createProject(stagesCost.map(toWei), projectOwnerAddress, projectReviewerAddress);
   tx.wait(1).then(receipt => {
     console.log("Transaction mined");
     const firstEvent = receipt && receipt.events && receipt.events[0];
@@ -66,13 +64,38 @@ const addProject = (project) => {
   });
 }
 
-const getProject = () => async id => {
-  console.log(`Getting project ${id}: ${projects[id]}`);
-  let project = await projectDao.selectById(id);
+const getProject = () => async hash => {
+  console.log('Getting project with hash ['+hash+']');
+  let project = await projectDao.selectByHash(hash);
   return project;
 };
+
+const fundProject = ({ config }) => async (deployerWallet, projectId, funderAddress) =>{
+  const seedyFiuba = await getContract(config, deployerWallet);
+  const tx = await seedyFiuba.fund(projectId);
+  tx.wait(1).then(receipt => {
+    console.log("Transaction mined");
+    const firstEvent = receipt && receipt.events && receipt.events[0];
+    console.log(firstEvent);
+    if (firstEvent && firstEvent.event == "ProjectFunded") {
+      const projectId = firstEvent.args.projectId.toNumber();
+      const funderAddress = firstEvent.args.funder.toString();
+      const funds = firstEvent.args.funds.toNumber();
+      console.log('Project with id ['+projectId+'] was funded with ['+funds+'] by ['+funderAddress+']');
+      const fundResult = {
+        projectId: projectId,
+        funderAddress: funderAddress,
+        funds: funds
+      }
+    } else {
+      console.error(`Project not funded in tx ${tx.hash}`);
+    }
+  });
+  return tx;
+}
 
 module.exports = dependencies => ({
   createProject: createProject(dependencies),
   getProject: getProject(dependencies),
+  fundProject: fundProject(dependencies)
 });
