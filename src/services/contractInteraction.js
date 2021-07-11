@@ -94,7 +94,7 @@ const fundProject = ({ config }) => async (deployerWallet, projectId, funderAddr
   return tx;
 }
 
-const setCompletedStageOfProject = ({ config }) => async (deployerWallet, projectId, completedStage) =>{
+const setCompletedStageOfProject = ({ config }) => async (deployerWallet, projectId, reviewerAddress, completedStage) =>{
   const seedyFiuba = await getContract(config, deployerWallet);
   const tx = await seedyFiuba.setCompletedStage(projectId, completedStage);
   tx.wait(1).then(receipt => {
@@ -105,7 +105,7 @@ const setCompletedStageOfProject = ({ config }) => async (deployerWallet, projec
     console.log(secondEvent);
     if (firstEvent && firstEvent.event == "StageCompleted") {
       const projectId = firstEvent.args.projectId.toNumber();
-      const stagedCompleted = firstEvent.args.stagedCompleted.toNumber();
+      const stagedCompleted = firstEvent.args.stageCompleted.toNumber();
       console.log('Staged ['+stagedCompleted+'] completed in project with id ['+projectId+']');
     } else {
       console.error(`Stage not completed in tx ${tx.hash}`);
