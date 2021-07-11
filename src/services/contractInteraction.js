@@ -94,8 +94,33 @@ const fundProject = ({ config }) => async (deployerWallet, projectId, funderAddr
   return tx;
 }
 
+const setCompletedStageOfProject = ({ config }) => async (deployerWallet, projectId, completedStage) =>{
+  const seedyFiuba = await getContract(config, deployerWallet);
+  const tx = await seedyFiuba.setCompletedStage(projectId, completedStage);
+  tx.wait(1).then(receipt => {
+    console.log("Transaction mined");
+    const firstEvent = receipt && receipt.events && receipt.events[0];
+    const secondEvent = receipt && receipt.events && receipt.events[1];
+    console.log(firstEvent);
+    console.log(secondEvent);
+    if (firstEvent && firstEvent.event == "StageCompleted") {
+      const projectId = firstEvent.args.projectId.toNumber();
+      const stagedCompleted = firstEvent.args.stagedCompleted.toNumber();
+      console.log('Staged ['+stagedCompleted+'] completed in project with id ['+projectId+']');
+    } else {
+      console.error(`Stage not completed in tx ${tx.hash}`);
+    }
+    if (secondEvent && secondEvent.event == "ProjectCompleted") {
+      const projectId = firstEvent.args.projectId.toNumber();
+      console.log('Project with id ['+projectId+'] is completed');
+    }
+  });
+  return tx;
+}
+
 module.exports = dependencies => ({
   createProject: createProject(dependencies),
   getProject: getProject(dependencies),
-  fundProject: fundProject(dependencies)
+  fundProject: fundProject(dependencies),
+  setCompletedStageOfProject: setCompletedStageOfProject(dependencies)
 });
