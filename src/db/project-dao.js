@@ -17,6 +17,16 @@ const SELECT_BY_ID =
   REVIEWS_TABLE +
   ' WHERE P.id = S.project_id AND P.id = R.project_id AND P.id = $1';
 
+const SELECT_BY_HASH =
+  'SELECT P.id, P.hash, P.owner_address, S.project_id, S.number, S.cost, R.project_id, R.reviewer_address' +
+  ' FROM ' +
+  PROJECTS_TABLE +
+  ' , ' +
+  STAGES_TABLE +
+  ' , ' +
+  REVIEWS_TABLE +
+  ' WHERE P.id = S.project_id AND P.id = R.project_id AND P.hash = $1';
+
 const INSERT =
   'INSERT INTO ' +
   PROJECTS_TABLE +
@@ -64,4 +74,17 @@ const selectById = (id) => {
   });
 }
 
-module.exports = { insert, select, selectById };
+const selectByHash = (hash) => {
+  return new Promise((resolve, reject) => {
+    queries.executeQueryWithParams(SELECT_BY_HASH, [hash
+    ])
+      .then((results) => {
+        resolve(adapter.adaptProject(results));
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+module.exports = { insert, select, selectById, selectByHash };
