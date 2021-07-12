@@ -3,7 +3,7 @@ function schema() {
     params: {
       type: "object",
       properties: {
-        id: {
+        user_id: {
           type: "string",
         },
         amount: {
@@ -11,15 +11,15 @@ function schema() {
         }
       },
     },
-    required: ["projectId", "funderId"],
+    required: ["user_id", "amount"],
   };
 }
 
 function handler({ walletService }) {
   return async function (req, reply) {
-    const walletId = req.params.id;
+    const userId = req.params.user_id;
     const amount = req.body.amount;
-    const chargeTx = await walletService.chargeWallet(walletId, amount)
+    const chargeTx = await walletService.chargeWallet(userId, amount);
     return reply.code(202).send(chargeTx);
   };
 }

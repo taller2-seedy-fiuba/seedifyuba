@@ -3,7 +3,7 @@ function schema() {
     params: {
       type: "object",
       properties: {
-        id: {
+        hash: {
           type: "string",
         },
         funder_id: {
@@ -11,13 +11,13 @@ function schema() {
         }
       },
     },
-    required: ["projectId", "funderId"],
+    required: ["hash", "funder_id"],
   };
 }
 
 function handler({ contractInteraction, walletService }) {
   return async function (req, reply) {
-    const projectId = req.params.id;
+    const projectId = req.params.hash;
     const funderWallet = await walletService.getWallet(req.body.funder_id);
     const fundProjectTx = await contractInteraction.fundProject(funderWallet, projectId)
     return reply.code(202).send(fundProjectTx);

@@ -3,18 +3,18 @@ function schema() {
     params: {
       type: "object",
       properties: {
-        id: {
+        hash: {
           type: "string",
         },
       },
     },
-    required: ["id"],
+    required: ["hash"],
   };
 }
 
 function handler({ contractInteraction }) {
   return async function (req, reply) {
-    const body = await contractInteraction.getProject(req.params.id);
+    const body = await contractInteraction.getProject(req.params.hash);
     reply.code(200).send(body);
   };
 }

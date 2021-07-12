@@ -3,8 +3,8 @@ function schema() {
     params: {
       type: "object",
       properties: {
-        id: {
-          type: "integer",
+        hash: {
+          type: "string",
         },
         reviewer_id: {
           type: "string",
@@ -14,7 +14,7 @@ function schema() {
         }
       },
     },
-    required: ["projectId", "reviewerId"],
+    required: ["hash", "reviewer_id", "stage_completed"],
   };
 }
 

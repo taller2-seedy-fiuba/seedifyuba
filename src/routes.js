@@ -29,7 +29,7 @@ function createWalletRoute({ services, config }) {
 function getWalletRoute({ services, config }) {
   return {
     method: "GET",
-    url: "/wallets/:id",
+    url: "/wallets/:user_id",
     schema: getWallet.schema(config),
     handler: getWallet.handler({ config, ...services }),
   };
@@ -38,7 +38,7 @@ function getWalletRoute({ services, config }) {
 function getWalletDataRoute({ services, config }) {
   return {
     method: "GET",
-    url: "/wallets/:id/data",
+    url: "/wallets/:user_id/data",
     schema: getWalletData.schema(config),
     handler: getWalletData.handler({ config, ...services }),
   };
@@ -47,7 +47,7 @@ function getWalletDataRoute({ services, config }) {
 function chargeWalletRoute({ services, config }) {
   return {
     method: "POST",
-    url: "/wallets/:id/charges",
+    url: "/wallets/:user_id/charges",
     schema: chargeWallet.schema(config),
     handler: chargeWallet.handler({ config, ...services }),
   };
@@ -65,7 +65,7 @@ function createProjectRoute({ services, config }) {
 function getProjectRoute({ services, config }) {
   return {
     method: "GET",
-    url: "/projects/:id",
+    url: "/projects/:hash",
     schema: foundProject.schema(config),
     handler: getProject.handler({ config, ...services }),
   };
@@ -74,7 +74,7 @@ function getProjectRoute({ services, config }) {
 function fundProjectRoute({ services, config }) {
   return {
     method: "POST",
-    url: "/projects/:id/funds",
+    url: "/projects/:hash/funds",
     schema: foundProject.schema(config),
     handler: foundProject.handler({ config, ...services }),
   };
@@ -83,7 +83,7 @@ function fundProjectRoute({ services, config }) {
 function completeStageRoute({ services, config }) {
   return {
     method: "POST",
-    url: "/projects/:id/stages",
+    url: "/projects/:hash/stages",
     schema: completeStage.schema(config),
     handler: completeStage.handler({ config, ...services }),
   };

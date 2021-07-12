@@ -3,12 +3,12 @@ function schema() {
     params: {
       type: "object",
       properties: {
-        id: {
-          type: "integer",
+        user_id: {
+          type: "string",
         },
       },
     },
-    required: ["id"],
+    required: ["user_id"],
   };
 }
 
