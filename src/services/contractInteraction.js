@@ -70,8 +70,8 @@ const getProject = () => async hash => {
   return project;
 };
 
-const fundProject = ({ config }) => async (deployerWallet, projectId, funderAddress) =>{
-  const seedyFiuba = await getContract(config, deployerWallet);
+const fundProject = ({ config }) => async (funderWallet, projectId) =>{
+  const seedyFiuba = await getContract(config, funderWallet);
   const tx = await seedyFiuba.fund(projectId);
   tx.wait(1).then(receipt => {
     console.log("Transaction mined");
@@ -94,8 +94,8 @@ const fundProject = ({ config }) => async (deployerWallet, projectId, funderAddr
   return tx;
 }
 
-const setCompletedStageOfProject = ({ config }) => async (deployerWallet, projectId, reviewerAddress, completedStage) =>{
-  const seedyFiuba = await getContract(config, deployerWallet);
+const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projectId, completedStage) =>{
+  const seedyFiuba = await getContract(config, reviewerWallet);
   const tx = await seedyFiuba.setCompletedStage(projectId, completedStage);
   tx.wait(1).then(receipt => {
     console.log("Transaction mined");
