@@ -65,7 +65,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
       x-codegen-request-body-name: user
-  /wallets/{userId}:
+  /wallets/{user_id}:
     get:
       tags:
         - Wallets
@@ -74,7 +74,7 @@ paths:
       operationId: retrieveWallet
       parameters:
         - in: path
-          name: userId
+          name: user_id
           required: true
           schema:
             type: string
@@ -97,7 +97,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
-  /wallets/{userId}/data:
+  /wallets/{user_id}/data:
     get:
       tags:
         - Wallets
@@ -106,7 +106,7 @@ paths:
       operationId: retrieveWalletData
       parameters:
         - in: path
-          name: userId
+          name: user_id
           required: true
           schema:
             type: string
@@ -129,7 +129,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
-  /wallets/{userId}/charges:
+  /wallets/{user_id}/charges:
     post:
       tags:
         - Wallets
@@ -138,7 +138,7 @@ paths:
       operationId: chargeWallet
       parameters:
         - in: path
-          name: userId
+          name: user_id
           required: true
           schema:
             type: string
