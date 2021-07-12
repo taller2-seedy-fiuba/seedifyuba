@@ -3,13 +3,13 @@ function schema() {
     params: {
       type: "object",
       properties: {
-        projectId: {
+        id: {
           type: "integer",
         },
-        reviewerId: {
+        reviewer_id: {
           type: "string",
         },
-        stageCompleted: {
+        stage_completed: {
           type: "integer",
         }
       },
@@ -20,10 +20,10 @@ function schema() {
 
 function handler({ contractInteraction, walletService }) {
   return async function (req, reply) {
-    const projectId = req.body.projectId;
-    const reviewerWallet = await walletService.getWallet(req.body.reviewerId);
-    const stageCompleted = req.body.stageCompleted;
-    const fundProjectTx = contractInteraction.setCompletedStageOfProject(reviewerWallet, projectId, stageCompleted);
+    const projectId = req.params.id;
+    const reviewerWallet = await walletService.getWallet(req.body.reviewer_id);
+    const stageCompleted = req.body.stage_completed;
+    const fundProjectTx = await contractInteraction.setCompletedStageOfProject(reviewerWallet, projectId, stageCompleted);
     return reply.code(202).send(fundProjectTx);
   };
 }

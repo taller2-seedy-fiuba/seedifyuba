@@ -26,7 +26,7 @@ function handler({ contractInteraction, walletService }) {
     const stagesCost = req.body.stagesCost;
     const ownerWalletData = await walletService.getWalletData(req.body.ownerId);
     const reviewerWalletData = await walletService.getWalletData(req.body.ownerId);
-    const createProjectTx = contractInteraction.createProject(
+    const createProjectTx = await contractInteraction.createProject(
       walletDeployer,
       stagesCost,
       ownerWalletData.address,

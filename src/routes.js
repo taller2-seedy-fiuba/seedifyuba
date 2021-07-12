@@ -74,7 +74,7 @@ function getProjectRoute({ services, config }) {
 function fundProjectRoute({ services, config }) {
   return {
     method: "POST",
-    url: "/projects/:id/founds",
+    url: "/projects/:id/funds",
     schema: foundProject.schema(config),
     handler: foundProject.handler({ config, ...services }),
   };

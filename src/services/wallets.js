@@ -1,12 +1,6 @@
 const ethers = require("ethers");
 const walletDao = require('../db/wallet-dao');
-const BigNumber = require("bignumber.js");
-
-const fromMilliToEther = number => {
-  const MILLIST_IN_UNIT = BigNumber(10).pow(-3);
-  return BigNumber(number).times(MILLIST_IN_UNIT).toFixed();
-};
-
+const calculations = require('./calculations');
 
 const getDeployerWallet = ({ config }) => () => {
   console.log("Getting Deployer Wallet");
@@ -59,7 +53,7 @@ const chargeWallet = ({config}) => async (id, amount) => {
   const deployerWallet = await deployerWalletAction();
   const wallet = await walletAction(id);
   console.log('Amount ['+amount+']');
-  const amountInEthers = fromMilliToEther(amount);
+  const amountInEthers = calculations.fromMilliToEther(amount);
   console.log('Amount In Ethers ['+amountInEthers+']');
   const tx = {
     to: wallet.address,

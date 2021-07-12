@@ -233,7 +233,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
-  /projects/{hash}/founds:
+  /projects/{hash}/funds:
     post:
       tags:
         - Projects
@@ -251,7 +251,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserInputDTO'
+              $ref: '#/components/schemas/FunderInputDTO'
         required: true
       responses:
         202:
@@ -290,7 +290,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserInputDTO'
+              $ref: '#/components/schemas/ReviewerInputDTO'
         required: true
       responses:
         202:
@@ -318,6 +318,20 @@ components:
       properties:
         username:
           description: Nombre de Usuario. Identificador unico de cada Usuario.
+          type: string
+          example: 'usuario1'
+    FunderInputDTO:
+      type: object
+      properties:
+        funder_id:
+          description: Nombre de Usuario Patrocinador. Identificador unico de cada Usuario.
+          type: string
+          example: 'usuario1'
+    ReviewerInputDTO:
+      type: object
+      properties:
+        reviewer_id:
+          description: Nombre de Usuario Veedor. Identificador unico de cada Usuario.
           type: string
           example: 'usuario1'
     WalletDataDTO:

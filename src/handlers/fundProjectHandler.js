@@ -3,10 +3,10 @@ function schema() {
     params: {
       type: "object",
       properties: {
-        projectId: {
-          type: "integer",
+        id: {
+          type: "string",
         },
-        funderId: {
+        funder_id: {
           type: "string",
         }
       },
@@ -17,9 +17,9 @@ function schema() {
 
 function handler({ contractInteraction, walletService }) {
   return async function (req, reply) {
-    const projectId = req.body.projectId;
-    const funderWallet = await walletService.getWallet(req.body.funderId);
-    const fundProjectTx = contractInteraction.fund(funderWallet, projectId)
+    const projectId = req.params.id;
+    const funderWallet = await walletService.getWallet(req.body.funder_id);
+    const fundProjectTx = await contractInteraction.fundProject(funderWallet, projectId)
     return reply.code(202).send(fundProjectTx);
   };
 }

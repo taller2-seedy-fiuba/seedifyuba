@@ -1,16 +1,11 @@
-const BigNumber = require("bignumber.js");
 const ethers = require("ethers");
 const projectDao = require('../db/project-dao');
 const stageDao = require('../db/stage-dao');
 const reviewDao = require('../db/review-dao');
+const calculations = require('./calculations');
 
 const getContract = (config, wallet) => {
   return new ethers.Contract(config.contractAddress, config.contractAbi, wallet);
-};
-
-const toWei = number => {
-  const WEIS_IN_ETHER = BigNumber(10).pow(18);
-  return BigNumber(number).times(WEIS_IN_ETHER).toFixed();
 };
 
 const createProject = ({ config }) => async (
@@ -21,7 +16,9 @@ const createProject = ({ config }) => async (
 ) => {
   console.log("Creating project with costs {"+stagesCost+"}, owner address ["+projectOwnerAddress+"] and reviewer address ["+projectReviewerAddress+"]");
   const seedyFiuba = await getContract(config, deployerWallet);
-  const tx = await seedyFiuba.createProject(stagesCost.map(toWei), projectOwnerAddress, projectReviewerAddress);
+  const costs = stagesCost.map(calculations.fromMilliToEther).map(calculations.toWei);
+  console.log('Final Costs [' + costs +']');
+  const tx = await seedyFiuba.createProject(costs, projectOwnerAddress, projectReviewerAddress);
   tx.wait(1).then(receipt => {
     console.log("Transaction mined");
     const firstEvent = receipt && receipt.events && receipt.events[0];
@@ -71,6 +68,7 @@ const getProject = () => async hash => {
 };
 
 const fundProject = ({ config }) => async (funderWallet, projectId) =>{
+  console.log('Funding project with id ['+projectId+'] by address ['+funderWallet.address+']');
   const seedyFiuba = await getContract(config, funderWallet);
   const tx = await seedyFiuba.fund(projectId);
   tx.wait(1).then(receipt => {
@@ -95,6 +93,7 @@ const fundProject = ({ config }) => async (funderWallet, projectId) =>{
 }
 
 const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projectId, completedStage) =>{
+  console.log('Completed stage ['+completedStage+'] of project with id ['+projectId+']');
   const seedyFiuba = await getContract(config, reviewerWallet);
   const tx = await seedyFiuba.setCompletedStage(projectId, completedStage);
   tx.wait(1).then(receipt => {
