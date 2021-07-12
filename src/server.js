@@ -11,6 +11,7 @@ routes.forEach(route => fastify.route(route({ config, services })));
 //Swagger & OpenAPI
 fastify.register(require('fastify-swagger'), {
   mode: 'static',
+  routePrefix: '/',
   specification: {
     path: './api/swagger.yaml',
     postProcessor: function(swaggerObject) {
