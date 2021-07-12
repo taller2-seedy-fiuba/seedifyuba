@@ -70,6 +70,38 @@ paths:
       tags:
         - Wallets
       summary: Consulta de Wallet
+      description: Recupera la wallet de usuario en sistema.
+      operationId: retrieveWallet
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Operacion Exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletDataDTO'
+        404:
+          description: Usuario no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+  /wallets/{userId}/data:
+    get:
+      tags:
+        - Wallets
+      summary: Consulta de Wallet
       description: Recupera la informacion de una wallet de usuario en sistema.
       operationId: retrieveWalletData
       parameters:
@@ -85,6 +117,44 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WalletDataDTO'
+        404:
+          description: Usuario no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+  /wallets/{userId}/charges:
+    post:
+      tags:
+        - Wallets
+      summary: Carga de Wallet
+      description: Carga un monto a la wallet de usuario en sistema.
+      operationId: chargeWallet
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Carga de la wallet
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChargeDTO'
+      responses:
+        200:
+          description: Operacion Exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargeDTO'
         404:
           description: Usuario no encontrado.
           content:
@@ -270,6 +340,13 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/WalletDataDTO'
+    ChargeDTO:
+      type: object
+      properties:
+        amount:
+          description: Monto de Ehters a cargar. La unidad es en Mini Ethers.
+          type: integer
+          example: 1000
     ProjectInputDTO:
       type: object
       properties:
