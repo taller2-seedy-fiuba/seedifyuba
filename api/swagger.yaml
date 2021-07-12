@@ -1,0 +1,353 @@
+openapi: 3.0.1
+info:
+  title: Smart Contract API SeedyFiuba
+  description: 'API de interaccion con el SmartContract de SeedyFiuba'
+  version: 1.0.0
+servers:
+  - url: https://seedy-fiuba-g1-seedifyuba.herokuapp.com
+  - url: http://localhost:5000
+tags:
+  - name: Wallets
+    description: Wallet de los Usuarios en SeedyFiuba
+  - name: Projects
+    description: Proyectos en el SmartContract en SeedyFiuba
+paths:
+  /wallets:
+    get:
+      tags:
+        - Wallets
+      summary: Consulta de Wallets
+      description: Recupera la informacion de las wallets de todos los usuarios en sistema.
+      operationId: retrieveWalletsData
+      responses:
+        200:
+          description: Operacion Exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletsDataCollectionDTO'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+    post:
+      tags:
+        - Wallets
+      summary: Alta de Wallet
+      description: Crea una wallet para un usuario y lo ingresa en el sistema persistiendo toda su informacion.
+      operationId: createWallet
+      requestBody:
+        description: Datos del usuario propietario de la nueva Wallet
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInputDTO'
+        required: true
+      responses:
+        201:
+          description: El usuario ha sido creado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletDataDTO'
+        400:
+          description: Bad Request. Alguno de los campos ingresados en invalido o esta incompleto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+      x-codegen-request-body-name: user
+  /wallets/{userId}:
+    get:
+      tags:
+        - Wallets
+      summary: Consulta de Wallet
+      description: Recupera la informacion de una wallet de usuario en sistema.
+      operationId: retrieveWalletData
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Operacion Exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletDataDTO'
+        404:
+          description: Usuario no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+  /projects:
+    post:
+      tags:
+        - Projects
+      summary: Alta de Proyecto
+      description: Crea un proyecto en el SC y lo ingresa en el sistema persistiendo toda su informacion.
+      operationId: createProject
+      requestBody:
+        description: Datos del usuario propietario o emprendedor del proyecto
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInputDTO'
+        required: true
+      responses:
+        202:
+          description: El usuario ha sido creado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDataDTO'
+        400:
+          description: Bad Request. Alguno de los campos ingresados en invalido o esta incompleto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+      x-codegen-request-body-name: user
+  /projects/{hash}:
+    get:
+      tags:
+        - Projects
+      summary: Consulta de Proyecto
+      description: Recupera la informacion de un proyecto en SC.
+      operationId: retrieveProject
+      parameters:
+        - in: path
+          name: hash
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Operacion Exitosa.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDataDTO'
+        404:
+          description: Usuario no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+  /projects/{hash}/founds:
+    post:
+      tags:
+        - Projects
+      summary: Fondeo de un Proyecto
+      description: Solicita enviar fondos a un proyecto
+      operationId: foundProject
+      parameters:
+        - in: path
+          name: hash
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Datos del usuario patrocinador del proyecto
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInputDTO'
+        required: true
+      responses:
+        202:
+          description: El usuario ha sido creado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDataDTO'
+        400:
+          description: Bad Request. Alguno de los campos ingresados en invalido o esta incompleto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+  /projects/{hash}/stages:
+    post:
+      tags:
+        - Projects
+      summary: Etapa Completa
+      description: Solicita completar la etapa de un proyecto
+      operationId: completeStage
+      parameters:
+        - in: path
+          name: hash
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Datos del usuario propietario de la nueva Wallet
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInputDTO'
+        required: true
+      responses:
+        202:
+          description: El usuario ha sido creado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDataDTO'
+        400:
+          description: Bad Request. Alguno de los campos ingresados en invalido o esta incompleto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+components:
+  schemas:
+    UserInputDTO:
+      type: object
+      properties:
+        username:
+          description: Nombre de Usuario. Identificador unico de cada Usuario.
+          type: string
+          example: 'usuario1'
+    WalletDataDTO:
+      type: object
+      properties:
+        id:
+          description: Identificador unico de la wallet
+          type: integer
+          format: int64
+          example: 1
+        address:
+          description: Direccion de la Wallet del usuario. Tambien conocido como clave publica.
+          type: string
+          pattern: "[a-fA-F0-9]{16}"
+        privateKey:
+          description: Apellido(s) del Usuario.
+          type: string
+          pattern: "[a-fA-F0-9]{16}"
+    WalletsDataCollectionDTO:
+      type: array
+      items:
+        $ref: '#/components/schemas/WalletDataDTO'
+    ProjectInputDTO:
+      type: object
+      properties:
+        ownerId:
+          description: Id del Usuario propietario. Este es el emprendedor del proyecto.
+          type: string
+          example: 'emprendedor1'
+        reviewerId:
+          description: Id del Usuario revisor. Este es el veedor del proyecto.
+          type: string
+          example: 'veedor1'
+        stagesCost:
+          description: Listado de costos de las etapas de cada proyecto.
+          type: array
+          items:
+            type: integer
+    ProjectDataDTO:
+      type: object
+      properties:
+        id:
+          description: Id del Usuario propietario. Este es el emprendedor del proyecto.
+          type: string
+          example: 'emprendedor1'
+        hash:
+          description: Hash del proyecto que se genera en la transaccion.
+          type: string
+        projectOwnerAddress:
+          description: Address o clave publica del Propietario o Emprendedor.
+          type: string
+        projectReviewerAddress:
+          description: Address o clave publica del Revisor o Veedor.
+          type: string
+    TransactionDataDTO:
+      type: object
+    ApiResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [OK, FAILURE]
+          example: 'OK'
+        code:
+          type: string
+          example: 'successful_operation'
+        message:
+          type: string
+          example: 'Successful Operation'
+    BadRequestResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            status:
+              example: 'FAILURE'
+            code:
+              example: 'invalid_payload'
+            message:
+              example: 'Some field is required!'
+    NotFoundResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            status:
+              example: 'FAILURE'
+            code:
+              example: 'wallet_not_found'
+            message:
+              example: 'Wallet was not found!'
+    UnexpectedErrorResponse:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            status:
+              example: 'FAILURE'
+            code:
+              example: 'unexpected_error'
+            message:
+              example: 'Unexpected Error'
