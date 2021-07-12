@@ -1,5 +1,12 @@
 const ethers = require("ethers");
 const walletDao = require('../db/wallet-dao');
+const BigNumber = require("bignumber.js");
+
+const fromMilliToEther = number => {
+  const MILLIST_IN_UNIT = BigNumber(10).pow(-3);
+  return BigNumber(number).times(MILLIST_IN_UNIT).toFixed();
+};
+
 
 const getDeployerWallet = ({ config }) => () => {
   console.log("Getting Deployer Wallet");
@@ -46,13 +53,17 @@ const getWallet = ({}) => async id => {
 };
 
 const chargeWallet = ({config}) => async (id, amount) => {
-  console.log("Charging Wallet with id ["+id+"]");
-  const deployerWallet = await getDeployerWallet(config);
-  const wallet = await getWallet(id);
-  const amountConverted = ethers.utils.parseEther(amount);
+  console.log("Charging Wallet with id ["+id+"] and amount ["+amount+"]");
+  const deployerWalletAction = await getDeployerWallet({config});
+  const walletAction = await getWallet({config});
+  const deployerWallet = await deployerWalletAction();
+  const wallet = await walletAction(id);
+  console.log('Amount ['+amount+']');
+  const amountInEthers = fromMilliToEther(amount);
+  console.log('Amount In Ethers ['+amountInEthers+']');
   const tx = {
     to: wallet.address,
-    value: amountConverted
+    value:  ethers.utils.parseEther(amountInEthers)
   };
   const sendPromise = deployerWallet.sendTransaction(tx);
   sendPromise.then((tx) => {

@@ -44,7 +44,7 @@ function getWalletDataRoute({ services, config }) {
   };
 }
 
-function chargeWallet({ services, config }) {
+function chargeWalletRoute({ services, config }) {
   return {
     method: "POST",
     url: "/wallets/:id/charges",
@@ -89,4 +89,4 @@ function completeStageRoute({ services, config }) {
   };
 }
 
-module.exports = [getWalletRoute, getWalletDataRoute, getWalletsDataRoute, createWalletRoute, createProjectRoute, getProjectRoute, fundProjectRoute, completeStageRoute, chargeWallet];
+module.exports = [getWalletRoute, getWalletDataRoute, getWalletsDataRoute, createWalletRoute, createProjectRoute, getProjectRoute, fundProjectRoute, completeStageRoute, chargeWalletRoute];
