@@ -45,10 +45,27 @@ const getWallet = ({}) => async id => {
   return new ethers.Wallet(wallet.privateKey, provider);
 };
 
+const chargeWallet = ({config}) => async (id, amount) => {
+  console.log("Charging Wallet with id ["+id+"]");
+  const deployerWallet = await getDeployerWallet(config);
+  const wallet = await getWallet(id);
+  const amountConverted = ethers.utils.parseEther(amount);
+  const tx = {
+    to: wallet.address,
+    value: amountConverted
+  };
+  const sendPromise = deployerWallet.sendTransaction(tx);
+  sendPromise.then((tx) => {
+    console.log('Wallet charged successfully')
+    console.log(tx);
+  });
+}
+
 module.exports = ({ config }) => ({
   createWallet: createWallet({ config }),
   getDeployerWallet: getDeployerWallet({ config }),
   getWalletsData: getWalletsData({ config }),
   getWalletData: getWalletData({ config }),
   getWallet: getWallet({ config }),
+  chargeWallet: chargeWallet({ config })
 });
