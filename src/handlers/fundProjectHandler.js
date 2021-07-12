@@ -17,9 +17,10 @@ function schema() {
 
 function handler({ contractInteraction, walletService }) {
   return async function (req, reply) {
-    const projectId = req.params.hash;
+    const projectHash = req.params.hash;
+    const project = await contractInteraction.getProject(projectHash);
     const funderWallet = await walletService.getWallet(req.body.funder_id);
-    const fundProjectTx = await contractInteraction.fundProject(funderWallet, projectId)
+    const fundProjectTx = await contractInteraction.fundProject(funderWallet, project.id);
     return reply.code(202).send(fundProjectTx);
   };
 }
