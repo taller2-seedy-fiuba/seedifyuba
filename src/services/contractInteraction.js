@@ -78,10 +78,10 @@ const getProject = () => async hash => {
   return project;
 };
 
-const updateProject = (updates) => {
+const updateProject = async (updates) => {
   console.log("Saving updates into database");
   console.dir(updates);
-  //TODO
+  await projectDao.updateById(updates);
 }
 
 const fundProject = ({ config }) => async (funderWallet, projectId, founds) =>{
@@ -129,12 +129,20 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
       const projectId = firstEvent.args.projectId.toNumber();
       const stagedCompleted = firstEvent.args.stageCompleted.toNumber();
       console.log('Staged ['+stagedCompleted+'] completed in project with id ['+projectId+']');
+      if (secondEvent && secondEvent.event == "ProjectCompleted") {
+        const projectId = firstEvent.args.projectId.toNumber();
+        console.log('Project with id ['+projectId+'] is completed');
+      }
+      const projectSC = seedyFiuba.projects(projectId);
+      const updates = {
+        projectId: projectId,
+        state: projectSC.state,
+        currentStage: projectSC.currentStage,
+        missingAmount: projectSC.missingAmount
+      }
+      updateProject(updates);
     } else {
       console.error(`Stage not completed in tx ${tx.hash}`);
-    }
-    if (secondEvent && secondEvent.event == "ProjectCompleted") {
-      const projectId = firstEvent.args.projectId.toNumber();
-      console.log('Project with id ['+projectId+'] is completed');
     }
   });
   return tx;

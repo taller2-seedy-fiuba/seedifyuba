@@ -113,4 +113,4 @@ const updateById = (updates) => {
   });
 }
 
-module.exports = { insert, select, selectById, selectByHash };
+module.exports = { insert, select, selectById, selectByHash, updateById };
