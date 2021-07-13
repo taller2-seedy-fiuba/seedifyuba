@@ -35,7 +35,7 @@ const INSERT =
 const UPDATE_BY_ID =
   'UPDATE ' +
   PROJECTS_TABLE +
-  ' SET state = $2, currentStage = $3, missingAmount = $4 WHERE id = $1';
+  ' SET state = $2, current_stage = $3, missing_amount = $4 WHERE id = $1';
 
 const insert = (project) => {
   return new Promise((resolve, reject) => {

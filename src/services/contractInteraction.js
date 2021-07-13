@@ -98,16 +98,18 @@ const fundProject = ({ config }) => async (funderWallet, projectId, founds) =>{
     if (firstEvent && firstEvent.event == "ProjectFunded") {
       const projectId = firstEvent.args.projectId.toNumber();
       const funderAddress = firstEvent.args.funder.toString();
-      const funds = firstEvent.args.funds.toNumber();
+      const funds = firstEvent.args.funds;
       console.log('Project with id ['+projectId+'] was funded with ['+funds+'] by ['+funderAddress+']');
-      const projectSC = seedyFiuba.projects(projectId);
-      const updates = {
-        projectId: projectId,
-        state: projectSC.state,
-        currentStage: projectSC.currentStage,
-        missingAmount: projectSC.missingAmount
-      }
-      updateProject(updates);
+      seedyFiuba.projects(projectId)
+        .then(projectSC => {
+          const updates = {
+            projectId: projectId,
+            state: projectSC.state,
+            currentStage: projectSC.currentStage.toNumber(),
+            missingAmount: projectSC.missingAmount
+          }
+          updateProject(updates);
+        });
     } else {
       console.error(`Project not funded in tx ${tx.hash}`);
     }
@@ -116,9 +118,14 @@ const fundProject = ({ config }) => async (funderWallet, projectId, founds) =>{
 }
 
 const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projectId, completedStage) =>{
+  console.dir(reviewerWallet);
+  console.dir(projectId);
+  console.dir(completedStage);
+  console.dir(config);
   console.log('Completed stage ['+completedStage+'] of project with id ['+projectId+']');
   const seedyFiuba = await getContract(config, reviewerWallet);
-  const tx = await seedyFiuba.setCompletedStage(projectId, completedStage);
+  console.dir(seedyFiuba);
+  const tx = await seedyFiuba.setCompletedStage(projectId, completedStage,  {gasLimit: 21332});
   tx.wait(1).then(receipt => {
     console.log("Transaction mined");
     const firstEvent = receipt && receipt.events && receipt.events[0];
@@ -133,14 +140,16 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
         const projectId = firstEvent.args.projectId.toNumber();
         console.log('Project with id ['+projectId+'] is completed');
       }
-      const projectSC = seedyFiuba.projects(projectId);
-      const updates = {
-        projectId: projectId,
-        state: projectSC.state,
-        currentStage: projectSC.currentStage,
-        missingAmount: projectSC.missingAmount
-      }
-      updateProject(updates);
+      seedyFiuba.projects(projectId)
+        .then(projectSC => {
+          const updates = {
+            projectId: projectId,
+            state: projectSC.state,
+            currentStage: projectSC.currentStage.toNumber(),
+            missingAmount: projectSC.missingAmount
+          }
+          updateProject(updates);
+        });
     } else {
       console.error(`Stage not completed in tx ${tx.hash}`);
     }
