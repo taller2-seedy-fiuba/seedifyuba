@@ -16,6 +16,10 @@ const createProject = ({ config }) => async (
 ) => {
   console.log("Creating project with costs {"+stagesCost+"}, owner address ["+projectOwnerAddress+"] and reviewer address ["+projectReviewerAddress+"]");
   const seedyFiuba = await getContract(config, deployerWallet);
+  const totalAmountNeeded = stagesCost.reduce((accumulator, current) => {
+    return accumulator + current;
+  });
+  console.log('Total Amount Needed ['+totalAmountNeeded+']');
   const costs = stagesCost.map(calculations.fromMilliToEther).map(calculations.toWei);
   console.log('Final Costs [' + costs +']');
   const tx = await seedyFiuba.createProject(costs, projectOwnerAddress, projectReviewerAddress);
@@ -25,21 +29,22 @@ const createProject = ({ config }) => async (
     console.log(firstEvent);
     if (firstEvent && firstEvent.event == "ProjectCreated") {
       const projectId = firstEvent.args.projectId.toNumber();
-      const totalAmountNeeded = firstEvent.args.totalAmountNeeded.toNumber();
       console.log("project id ["+projectId+"]");
-      const projectSC = seedyFiuba.projects(projectId);
-      const project = {
-        projectId: projectId,
-        hash: tx.hash,
-        stagesCost: stagesCost,
-        projectOwnerAddress: projectOwnerAddress,
-        projectReviewerAddress: projectReviewerAddress,
-        currentStage: projectSC.currentStage,
-        state: projectSC.state,
-        totalAmountNeeded: totalAmountNeeded,
-        missingAmount: projectSC.missingAmount
-      }
-      addProject(project);
+      seedyFiuba.projects(projectId)
+        .then(projectSC => {
+          const project = {
+            projectId: projectId,
+            hash: tx.hash,
+            projectOwnerAddress: projectOwnerAddress,
+            projectReviewerAddress: projectReviewerAddress,
+            stagesCost: stagesCost,
+            state: projectSC.state,
+            currentStage: projectSC.currentStage.toNumber(),
+            totalAmountNeeded: totalAmountNeeded,
+            missingAmount: totalAmountNeeded
+          }
+          addProject(project);
+        });
     } else {
       console.error(`Project not created in tx ${tx.hash}`);
     }

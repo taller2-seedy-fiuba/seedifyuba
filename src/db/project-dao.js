@@ -30,9 +30,9 @@ const SELECT_BY_HASH =
 const INSERT =
   'INSERT INTO ' +
   PROJECTS_TABLE +
-  ' (id, hash, owner_address) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *';
+  ' (id, hash, owner_address, state, current_stage, total_amount_needed, missing_amount) VALUES ($1, $2, $3, $4, $5, $6, $7)';
 
-const INSERT =
+const UPDATE_BY_ID =
   'UPDATE ' +
   PROJECTS_TABLE +
   ' SET state = $2, currentStage = $3, missingAmount = $4 WHERE id = $1';
@@ -49,7 +49,7 @@ const insert = (project) => {
       project.missingAmount
     ])
       .then((results) => {
-        resolve(adapter.adaptProject(results));
+        resolve();
       })
       .catch((err) => {
         reject(err);
