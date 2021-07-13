@@ -25,13 +25,19 @@ const createProject = ({ config }) => async (
     console.log(firstEvent);
     if (firstEvent && firstEvent.event == "ProjectCreated") {
       const projectId = firstEvent.args.projectId.toNumber();
+      const totalAmountNeeded = firstEvent.args.totalAmountNeeded.toNumber();
       console.log("project id ["+projectId+"]");
+      const projectSC = seedyFiuba.projects(projectId);
       const project = {
         projectId: projectId,
         hash: tx.hash,
         stagesCost: stagesCost,
         projectOwnerAddress: projectOwnerAddress,
-        projectReviewerAddress: projectReviewerAddress
+        projectReviewerAddress: projectReviewerAddress,
+        currentStage: projectSC.currentStage,
+        state: projectSC.state,
+        totalAmountNeeded: totalAmountNeeded,
+        missingAmount: projectSC.missingAmount
       }
       addProject(project);
     } else {
@@ -67,6 +73,12 @@ const getProject = () => async hash => {
   return project;
 };
 
+const updateProject = (updates) => {
+  console.log("Saving updates into database");
+  console.dir(updates);
+  //TODO
+}
+
 const fundProject = ({ config }) => async (funderWallet, projectId, founds) =>{
   console.log('Funding project with id ['+projectId+'] by address ['+funderWallet.address+']');
   const seedyFiuba = await getContract(config, funderWallet);
@@ -83,11 +95,14 @@ const fundProject = ({ config }) => async (funderWallet, projectId, founds) =>{
       const funderAddress = firstEvent.args.funder.toString();
       const funds = firstEvent.args.funds.toNumber();
       console.log('Project with id ['+projectId+'] was funded with ['+funds+'] by ['+funderAddress+']');
-      const fundResult = {
+      const projectSC = seedyFiuba.projects(projectId);
+      const updates = {
         projectId: projectId,
-        funderAddress: funderAddress,
-        funds: funds
+        state: projectSC.state,
+        currentStage: projectSC.currentStage,
+        missingAmount: projectSC.missingAmount
       }
+      updateProject(updates);
     } else {
       console.error(`Project not funded in tx ${tx.hash}`);
     }

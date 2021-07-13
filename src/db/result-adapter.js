@@ -29,7 +29,11 @@ const convertProject = (projectDBO) => {
     hash: projectDBO['hash'],
     projectOwnerAddress: projectDBO['owner_address'],
     projectReviewerAddress: projectDBO['reviewer_address'],
-    stagesCost: projectDBO['stages_cost']
+    stagesCost: projectDBO['stages_cost'],
+    state: projectDBO['state'],
+    currentStage: projectDBO['current_stage'],
+    totalAmountNeeded: projectDBO['total_amount_needed'],
+    missingAmount: projectDBO['missing_amount']
   }
 }
 
