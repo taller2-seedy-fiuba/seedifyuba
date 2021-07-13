@@ -1,7 +1,7 @@
 const BigNumber = require("bignumber.js");
 
 const fromMilliToEther = number => {
-  const MILLIST_IN_UNIT = BigNumber(10).pow(-4);//Dejarlo asi que funciona
+  const MILLIST_IN_UNIT = BigNumber(10).pow(-3);
   return BigNumber(number).times(MILLIST_IN_UNIT).toFixed();
 };
 

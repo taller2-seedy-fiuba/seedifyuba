@@ -67,10 +67,13 @@ const getProject = () => async hash => {
   return project;
 };
 
-const fundProject = ({ config }) => async (funderWallet, projectId) =>{
+const fundProject = ({ config }) => async (funderWallet, projectId, founds) =>{
   console.log('Funding project with id ['+projectId+'] by address ['+funderWallet.address+']');
   const seedyFiuba = await getContract(config, funderWallet);
-  const tx = await seedyFiuba.fund(projectId);
+  console.dir(seedyFiuba);
+  const weisFunds = calculations.toWei(calculations.fromMilliToEther(founds));
+  console.log('Weis funds ['+weisFunds+']');
+  const tx = await seedyFiuba.fund(projectId, {value: weisFunds});
   tx.wait(1).then(receipt => {
     console.log("Transaction mined");
     const firstEvent = receipt && receipt.events && receipt.events[0];
