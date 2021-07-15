@@ -47,7 +47,7 @@ const getWallet = ({}) => async id => {
 };
 
 const chargeWallet = ({config}) => async (id, amount) => {
-  console.log("Charging Wallet with id ["+id+"] and amount ["+amount+"]");
+  console.log("Charging Wallet with id ["+id+"] and amount ["+amount+"] MiniEthers");
   const deployerWalletAction = await getDeployerWallet({config});
   const walletAction = await getWallet({config});
   const deployerWallet = await deployerWalletAction();
@@ -67,7 +67,7 @@ const chargeWallet = ({config}) => async (id, amount) => {
 }
 
 const transfer = ({config}) => async (sender, receiver, amount) => {
-  console.log('Transferring from ['+sender.address+'] to ['+receiver.address+'] amount ['+amount+']');
+  console.log('Transferring from ['+sender.address+'] to ['+receiver.address+'] amount ['+amount+'] MiniEthers');
   const amountInEthers = calculations.fromMilliToEther(amount);
   console.log('Amount In Ethers ['+amountInEthers+']');
   const tx = {
