@@ -72,10 +72,27 @@ const addProject = (project) => {
   });
 }
 
-const getProject = () => async hash => {
-  console.log('Getting project with hash ['+hash+']');
-  let project = await projectDao.selectByHash(hash);
-  return project;
+const getProject = ({ config }) => async (hash, source, deployerWallet) => {
+  console.log('Getting project with hash ['+hash+'] and source ['+source+']');
+  const project = await projectDao.selectByHash(hash);
+  console.log('DB Project');
+  console.dir(project);
+  if(!source || source == 'database'){
+    return project;
+  }
+  if(source == 'contract'){
+    const seedyFiuba = await getContract(config, deployerWallet);
+    const projectSC = await seedyFiuba.projects(project.id);
+    console.log('SC Project');
+    console.dir(projectSC);
+    return {
+      state: projectSC.state,
+      currentStage: projectSC.currentStage,
+      reviewer: projectSC.reviewer,
+      owner: projectSC.owner,
+      missingAmount: projectSC.missingAmount
+    };
+  }
 };
 
 const updateProject = async (updates) => {
@@ -125,17 +142,19 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
   console.log('Completed stage ['+completedStage+'] of project with id ['+projectId+']');
   const seedyFiuba = await getContract(config, reviewerWallet);
   console.dir(seedyFiuba);
-  const tx = await seedyFiuba.setCompletedStage(projectId, completedStage,  {gasLimit: 21332});
+  const tx = await seedyFiuba.setCompletedStage(projectId, completedStage,  {gasLimit: 100000});
   tx.wait(1).then(receipt => {
     console.log("Transaction mined");
     const firstEvent = receipt && receipt.events && receipt.events[0];
     const secondEvent = receipt && receipt.events && receipt.events[1];
+    console.log('First Event');
     console.log(firstEvent);
+    console.log('Second Event');
     console.log(secondEvent);
     if (firstEvent && firstEvent.event == "StageCompleted") {
       const projectId = firstEvent.args.projectId.toNumber();
-      const stagedCompleted = firstEvent.args.stageCompleted.toNumber();
-      console.log('Staged ['+stagedCompleted+'] completed in project with id ['+projectId+']');
+      const stageCompleted = firstEvent.args.stageCompleted.toNumber();
+      console.log('Staged ['+stageCompleted+'] completed in project with id ['+projectId+']');
       if (secondEvent && secondEvent.event == "ProjectCompleted") {
         const projectId = firstEvent.args.projectId.toNumber();
         console.log('Project with id ['+projectId+'] is completed');
@@ -146,7 +165,7 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
             projectId: projectId,
             state: projectSC.state,
             currentStage: projectSC.currentStage.toNumber(),
-            missingAmount: projectSC.missingAmount
+            missingAmount: projectSC.missingAmount.toNumber()
           }
           updateProject(updates);
         });
