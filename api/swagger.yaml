@@ -64,7 +64,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
-      x-codegen-request-body-name: user
+      x-codegen-request-body-name: wallet
   /wallets/{user_id}:
     get:
       tags:
@@ -200,7 +200,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
-      x-codegen-request-body-name: user
+      x-codegen-request-body-name: project
   /projects/{hash}:
     get:
       tags:
@@ -212,6 +212,11 @@ paths:
         - in: path
           name: hash
           required: true
+          schema:
+            type: string
+        - in: query
+          name: source
+          required: false
           schema:
             type: string
       responses:
@@ -311,6 +316,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
+  /transfers:
+    post:
+      tags:
+        - Transfers
+      summary: Transferencia
+      description: Realiza una transferencia de una Wallet a otra. Recibe el emisor, receptor y el monto a transferir en MiliEthers
+      operationId: transfer
+      requestBody:
+        description: Datos de la transferencia, emisor, receptor y monto en MiliEthers.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferDTO'
+        required: true
+      responses:
+        202:
+          description: El usuario ha sido creado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDataDTO'
+        400:
+          description: Bad Request. Alguno de los campos ingresados en invalido o esta incompleto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+      x-codegen-request-body-name: transfer
 components:
   schemas:
     UserInputDTO:
@@ -392,6 +431,17 @@ components:
           type: string
         projectReviewerAddress:
           description: Address o clave publica del Revisor o Veedor.
+          type: string
+    TransferDTO:
+      properties:
+        sender_id:
+          description: ID del Emisor.
+          type: string
+        receiver_id:
+          description: ID Receptor o Destinatario.
+          type: string
+        amount:
+          description: Monto a transferir
           type: string
     TransactionDataDTO:
       type: object

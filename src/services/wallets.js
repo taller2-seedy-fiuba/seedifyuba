@@ -66,11 +66,28 @@ const chargeWallet = ({config}) => async (id, amount) => {
   });
 }
 
+const transfer = ({config}) => async (sender, receiver, amount) => {
+  console.log('Transferring from ['+sender.address+'] to ['+receiver.address+'] amount ['+amount+']');
+  const amountInEthers = calculations.fromMilliToEther(amount);
+  console.log('Amount In Ethers ['+amountInEthers+']');
+  const tx = {
+    to: receiver.address,
+    value:  ethers.utils.parseEther(amountInEthers)
+  };
+  const sendPromise = sender.sendTransaction(tx);
+  sendPromise.then((tx) => {
+    console.log('Successful Transaction');
+    console.log(tx);
+    return tx;
+  });
+}
+
 module.exports = ({ config }) => ({
   createWallet: createWallet({ config }),
   getDeployerWallet: getDeployerWallet({ config }),
   getWalletsData: getWalletsData({ config }),
   getWalletData: getWalletData({ config }),
   getWallet: getWallet({ config }),
-  chargeWallet: chargeWallet({ config })
+  chargeWallet: chargeWallet({ config }),
+  transfer: transfer({ config })
 });

@@ -7,6 +7,7 @@ const getProject = require("./handlers/getProjectHandler");
 const foundProject = require("./handlers/fundProjectHandler");
 const completeStage = require("./handlers/completeStageHandler");
 const chargeWallet = require("./handlers/chargeWalletHandler");
+const doTransfer = require("./handlers/doTransferHandler");
 
 function getWalletsDataRoute({ services, config }) {
   return {
@@ -89,4 +90,13 @@ function completeStageRoute({ services, config }) {
   };
 }
 
-module.exports = [getWalletRoute, getWalletDataRoute, getWalletsDataRoute, createWalletRoute, createProjectRoute, getProjectRoute, fundProjectRoute, completeStageRoute, chargeWalletRoute];
+function transfersRoute({ services, config }) {
+  return {
+    method: "POST",
+    url: "/transfers",
+    schema: doTransfer.schema(config),
+    handler: doTransfer.handler({ config, ...services }),
+  };
+}
+
+module.exports = [ getWalletRoute, getWalletDataRoute, getWalletsDataRoute, createWalletRoute, createProjectRoute, getProjectRoute, fundProjectRoute, completeStageRoute, chargeWalletRoute, transfersRoute ];
