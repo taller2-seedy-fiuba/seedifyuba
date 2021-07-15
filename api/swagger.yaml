@@ -221,11 +221,13 @@ paths:
             type: string
       responses:
         200:
-          description: Operacion Exitosa.
+          description: Operacion Exitosa. Dependiendo del Source la estructura de la respuesta cambia.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProjectDataDTO'
+                oneOf:
+                  - $ref: '#/components/schemas/ProjectDataDTO'
+                  - $ref: '#/components/schemas/ProjectSCDataDTO'
         404:
           description: Usuario no encontrado.
           content:
@@ -519,6 +521,30 @@ components:
         projectReviewerAddress:
           description: Address o clave publica del Revisor o Veedor.
           type: string
+    ProjectSCDataDTO:
+      type: object
+      properties:
+        state:
+          type: integer
+          format: int32
+        currentStage:
+          type: object
+          properties:
+            type:
+              type: string
+            hex:
+              type: string
+        reviewer:
+          type: string
+        owner:
+          type: string
+        missingAmount:
+          type: object
+          properties:
+            type:
+              type: string
+            hex:
+              type: string
     TransferDTO:
       properties:
         sender_id:
