@@ -84,7 +84,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WalletDataDTO'
+                $ref: '#/components/schemas/WalletDTO'
         404:
           description: Usuario no encontrado.
           content:
@@ -101,7 +101,7 @@ paths:
     get:
       tags:
         - Wallets
-      summary: Consulta de Wallet
+      summary: Consulta Informacion de Wallet
       description: Recupera la informacion de una wallet de usuario en sistema.
       operationId: retrieveWalletData
       parameters:
@@ -373,6 +373,93 @@ components:
           description: Nombre de Usuario Veedor. Identificador unico de cada Usuario.
           type: string
           example: 'usuario1'
+    WalletDTO:
+      type: object
+      properties:
+        _isSigner:
+          type: boolean
+        address:
+          type: string
+        provider:
+          type: object
+          properties:
+            _isProvider:
+              type: boolean
+            _events:
+              type: array
+              items:
+                type: string
+            _emitted:
+              type: object
+              properties:
+                block:
+                  type: integer
+                  format: int32
+            formatter:
+              type: object
+              properties:
+                formats:
+                  type: object
+                  properties:
+                    transaction:
+                      type: object
+                      properties:
+                        transactionRequest:
+                          type: object
+                        receiptLog:
+                          type: object
+                        receipt:
+                          type: object
+                        block:
+                          type: object
+                        blockWithTransactions:
+                          type: object
+                        filter:
+                          type: object
+                        filterLog:
+                          type: object
+            anyNetwork:
+              type: boolean
+            _network:
+              type: object
+              properties:
+                name:
+                  type: string
+                chainId:
+                  type: integer
+                  format: int32
+                ensAddress:
+                  type: string
+                  format: nullable
+            _maxInternalBlockNumber:
+              type: integer
+              format: int32
+            _lastBlockNumber:
+              type: integer
+              format: int32
+            _pollingInterval:
+              type: integer
+              format: int32
+            _fastQueryDate:
+              type: integer
+              format: int32
+            connection:
+              type: object
+              properties:
+                allowGzip:
+                  type: boolean
+                url:
+                  type: string
+            _nextId:
+              type: integer
+              format: int32
+            apiKey:
+              type: string
+            projectId:
+              type: string
+            projectSecret:
+              type: string
+              format: nullable
     WalletDataDTO:
       type: object
       properties:
