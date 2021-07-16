@@ -1,22 +1,24 @@
+const bodyJsonSchema = {
+  type: 'object',
+  required: ["ownerId", "reviewerId", "stagesCost"],
+  properties: {
+    ownerId: {
+      type: "string",
+    },
+    reviewerId: {
+      type: "string",
+    },
+    stagesCost: {
+      type: "array",
+      minItems: 1,
+      Items: { type: "number" },
+    }
+  }
+}
+
 function schema() {
   return {
-    params: {
-      type: "object",
-      properties: {
-        ownerId: {
-          type: "integer",
-        },
-        reviewerId: {
-          type: "integer",
-        },
-        stagesCost: {
-          type: "array",
-          minItems: 1,
-          Items: { type: "number" },
-        },
-      },
-    },
-    required: ["ownerId", "reviewerId", "stagesCost"],
+    body: bodyJsonSchema
   };
 }
 

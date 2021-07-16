@@ -1,16 +1,18 @@
+const bodyJsonSchema = {
+  type: "object",
+  required: ["user_id"],
+  properties: {
+    user_id: {
+      type: "string",
+    },
+  }
+}
+
 function schema() {
   return {
-    params: {
-      type: "object",
-      properties: {
-        user_id: {
-          type: "string",
-        },
-      },
-    },
-    required: ["user_id"],
+    body: bodyJsonSchema
   };
-}
+};
 
 function handler({ walletService }) {
   return async function (req, reply) {

@@ -12,7 +12,7 @@ COPY . .
 RUN npm install
 
 #Deploy SmartContract in Kovan
-RUN npm run deploy-kovan
+#RUN npm run deploy-kovan
 
 #Ignored by heroku
 EXPOSE 5000

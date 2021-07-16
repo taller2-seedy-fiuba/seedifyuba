@@ -1,20 +1,27 @@
+const paramsJsonSchema = {
+  type: 'object',
+  properties: {
+    hash: { type: 'string' }
+  }
+}
+
+const bodyJsonSchema = {
+  type: "object",
+  required: ["reviewer_id", "stage_completed"],
+  properties: {
+    reviewer_id: {
+      type: "string",
+    },
+    stage_completed: {
+      type: "integer",
+    }
+  }
+}
+
 function schema() {
   return {
-    params: {
-      type: "object",
-      properties: {
-        hash: {
-          type: "string",
-        },
-        reviewer_id: {
-          type: "string",
-        },
-        stage_completed: {
-          type: "integer",
-        }
-      },
-    },
-    required: ["hash", "reviewer_id", "stage_completed"],
+    params: paramsJsonSchema,
+    body: bodyJsonSchema
   };
 }
 

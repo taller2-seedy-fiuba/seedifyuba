@@ -1,14 +1,21 @@
+const queryStringJsonSchema = {
+  type: 'object',
+  properties: {
+    source: { type: 'string' }
+  }
+}
+
+const paramsJsonSchema = {
+  type: 'object',
+  properties: {
+    hash: { type: 'string' }
+  }
+}
+
 function schema() {
   return {
-    params: {
-      type: "object",
-      properties: {
-        hash: {
-          type: "string",
-        },
-      },
-    },
-    required: ["hash"],
+    querystring: queryStringJsonSchema,
+    params: paramsJsonSchema,
   };
 }
 

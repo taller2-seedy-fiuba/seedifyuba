@@ -1,17 +1,24 @@
+const paramsJsonSchema = {
+  type: 'object',
+  properties: {
+    user_id: { type: 'string' }
+  }
+}
+
+const bodyJsonSchema = {
+  type: "object",
+  required: ["amount"],
+  properties: {
+    amount: {
+      type: "integer",
+    }
+  }
+}
+
 function schema() {
   return {
-    params: {
-      type: "object",
-      properties: {
-        user_id: {
-          type: "string",
-        },
-        amount: {
-          type: "integer",
-        }
-      },
-    },
-    required: ["user_id", "amount"],
+    params: paramsJsonSchema,
+    body: bodyJsonSchema
   };
 }
 

@@ -576,12 +576,12 @@ components:
         - $ref: '#/components/schemas/ApiResponse'
         - type: object
           properties:
-            status:
-              example: 'FAILURE'
-            code:
-              example: 'invalid_payload'
+            error:
+              example: 'Bad Request'
+            statusCode:
+              example: 400
             message:
-              example: 'Some field is required!'
+              example: 'body should have required property "id"'
     NotFoundResponse:
       allOf:
         - $ref: '#/components/schemas/ApiResponse'

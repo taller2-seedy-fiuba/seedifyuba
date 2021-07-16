@@ -1,20 +1,22 @@
+const bodyJsonSchema = {
+  type: 'object',
+  required: ["sender_id", "receiver_id", "amount"],
+  properties: {
+    sender_id: {
+      type: "string",
+    },
+    receiver_id: {
+      type: "string",
+    },
+    amount: {
+      type: "integer"
+    }
+  }
+}
+
 function schema() {
   return {
-    params: {
-      type: "object",
-      properties: {
-        sender_id: {
-          type: "string",
-        },
-        receiver_id: {
-          type: "string",
-        },
-        amount: {
-          type: "integer"
-        }
-      },
-    },
-    required: ["sender_id", "receiver_id", "amount"],
+    body: bodyJsonSchema
   };
 }
 

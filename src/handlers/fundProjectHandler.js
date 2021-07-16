@@ -1,21 +1,27 @@
+const paramsJsonSchema = {
+  type: 'object',
+  properties: {
+    hash: { type: 'string' }
+  }
+}
+
+const bodyJsonSchema = {
+  type: "object",
+  required: ["funder_id", "funds"],
+  properties: {
+    funder_id: {
+      type: "string",
+    },
+    funds: {
+      type: "integer",
+    }
+  }
+}
+
 function schema() {
   return {
-    params: {
-      type: "object",
-      properties: {
-        hash: {
-          type: "string",
-        },
-        funder_id: {
-          type: "string",
-        }
-        ,
-        funds: {
-          type: "integer",
-        }
-      },
-    },
-    required: ["hash", "funder_id"],
+    params: paramsJsonSchema,
+    body: bodyJsonSchema
   };
 }
 
