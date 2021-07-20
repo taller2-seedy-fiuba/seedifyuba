@@ -27,7 +27,7 @@ function handler({ contractInteraction, walletService }) {
     const projectHash = req.params.hash;
     const project = await contractInteraction.getProject(projectHash);
     const ownerWallet = await walletService.getWallet(req.body.owner_id);
-    const cancelProjectTx = await contractInteraction.setCompletedStageOfProject(ownerWallet, project.id);
+    const cancelProjectTx = await contractInteraction.cancelProject(ownerWallet, project.id);
     return reply.code(202).send(cancelProjectTx);
   };
 }

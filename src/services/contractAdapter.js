@@ -1,9 +1,11 @@
+const calculations = require('./calculations');
+
 const adaptProjectFromSC = projectSC => {
   return {
     projectId: projectSC.projectId,
     state: adaptStateFromSC(projectSC.state),
     currentStage: projectSC.currentStage.toNumber(),
-    missingAmount: projectSC.missingAmount,
+    missingAmount: calculations.fromEtherToMilli(calculations.fromWeiToEther(projectSC.missingAmount)),
     owner: projectSC.owner,
     reviewer: projectSC.reviewer
   }

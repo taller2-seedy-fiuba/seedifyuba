@@ -87,13 +87,7 @@ const getProject = ({ config }) => async (hash, source, deployerWallet) => {
     const projectSC = await seedyFiuba.projects(project.id);
     console.log('SC Project');
     console.dir(projectSC);
-    return {
-      state: projectSC.state,
-      currentStage: projectSC.currentStage,
-      reviewer: projectSC.reviewer,
-      owner: projectSC.owner,
-      missingAmount: projectSC.missingAmount
-    };
+    return contractAdapter.adaptProjectFromSC(projectSC);
   }
 };
 
@@ -184,7 +178,7 @@ const cancelProject = ({ config }) => async (ownerWallet, projectId) =>{
   console.log('Canceling project with ID ['+projectId+']');
   const seedyFiuba = await getContract(config, ownerWallet);
   console.dir(seedyFiuba);
-  const tx = await seedyFiuba.cancelProject(projectId);
+  const tx = await seedyFiuba.cancelProject(projectId, {gasLimit: 100000});
   tx.wait(1).then(receipt => {
     console.log("Transaction mined");
     const firstEvent = receipt && receipt.events && receipt.events[0];

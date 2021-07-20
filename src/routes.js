@@ -3,6 +3,7 @@ const getWalletData = require("./handlers/getWalletDataHandler");
 const getWalletsData = require("./handlers/getWalletsHandler");
 const createWallet = require("./handlers/createWalletHandler");
 const createProject = require("./handlers/createProjectHandler");
+const cancelProject = require("./handlers/cancelProjectHandler");
 const getProject = require("./handlers/getProjectHandler");
 const foundProject = require("./handlers/fundProjectHandler");
 const completeStage = require("./handlers/completeStageHandler");
@@ -67,8 +68,17 @@ function getProjectRoute({ services, config }) {
   return {
     method: "GET",
     url: "/projects/:hash",
-    schema: foundProject.schema(config),
+    schema: getProject.schema(config),
     handler: getProject.handler({ config, ...services }),
+  };
+}
+
+function updateStatusProjectRoute({ services, config }) {
+  return {
+    method: "PATCH",
+    url: "/projects/:hash",
+    schema: cancelProject.schema(config),
+    handler: cancelProject.handler({ config, ...services }),
   };
 }
 
@@ -99,4 +109,4 @@ function transfersRoute({ services, config }) {
   };
 }
 
-module.exports = [ getWalletRoute, getWalletDataRoute, getWalletsDataRoute, createWalletRoute, createProjectRoute, getProjectRoute, fundProjectRoute, completeStageRoute, chargeWalletRoute, transfersRoute ];
+module.exports = [ getWalletRoute, getWalletDataRoute, getWalletsDataRoute, createWalletRoute, createProjectRoute, updateStatusProjectRoute, getProjectRoute, fundProjectRoute, completeStageRoute, chargeWalletRoute, transfersRoute ];
