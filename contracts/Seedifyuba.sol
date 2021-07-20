@@ -52,6 +52,12 @@ contract Seedifyuba is Ownable {
     event ProjectStarted(uint256 indexed projectId);
 
     /**
+        @notice Event emitted when a project is canceled
+        @param projectId Identifier of the project that was canceled
+    */
+    event ProjectCanceled(uint256 indexed projectId);
+
+    /**
         @notice Event emitted when a project completes, i.e. the last stage is completed
         @param projectId Identifier of the project that was completed
     */
@@ -77,7 +83,7 @@ contract Seedifyuba is Ownable {
         @notice Representation of a project.
         Project is the main entity that this contracts cares about
         It represents a social project where:
-        -state is the State that the project is in 
+        -state is the State that the project is in
         - stagesCost is an array that holds the cost to complete each of the stages
         - currentStage represents the stage that the project is in,
             only representative if the project is IN_PROGRESS
@@ -108,7 +114,7 @@ contract Seedifyuba is Ownable {
      */
     mapping(uint256 => mapping(address => uint256)) public fundsSent;
 
-    /** 
+    /**
         @notice Id of the next project that will be created
      */
     uint256 public nextId;
@@ -119,6 +125,15 @@ contract Seedifyuba is Ownable {
     */
     modifier onlyReviewer(uint256 projectId) {
         require(msg.sender == projects[projectId].reviewer, "not project reviewer");
+        _;
+    }
+
+    /**
+        @notice Checks that the caller is the owner of the project, reverts otherwise
+        @param projectId Identifier of the project that we are dealing with
+    */
+    modifier onlyOwner(uint256 projectId) {
+        require(msg.sender == projects[projectId].owner, "not project owner");
         _;
     }
 
@@ -197,7 +212,7 @@ contract Seedifyuba is Ownable {
         @notice Sets a stage(and all of the previous) as completed.
         Can only be called by the reviewer and will send all
         of the funds corresponding to the past stages and the current
-        (i.e. the latest stage that wasn't completed) 
+        (i.e. the latest stage that wasn't completed)
         that were not yet sent.
         Emits a StageCompleted event of the last completed stage(i.e.
         if stage 3 was marked as completed, implying that 2, 1 and 0 were
@@ -236,7 +251,7 @@ contract Seedifyuba is Ownable {
     /**
         @notice Receives funds and assigns them to a project.
         The project should be in FUNDING, will fail otherwise.
-        This function will mark the project as IN_PROGRESS if all the 
+        This function will mark the project as IN_PROGRESS if all the
         funding required is met, this will also give the budget for the
         first stage. If the amount sent is over the necessary amount,
         the rest will be sent back to the funder
@@ -330,5 +345,20 @@ contract Seedifyuba is Ownable {
         uint256 funds = 0;
         for (uint256 i = fromStage; i <= toStage; i++) funds = funds.add(project.stagesCost[i]);
         project.owner.transfer(funds);
+    }
+
+    /**
+        @notice Cancel the given project.
+        Only owner can cancel projects
+        @param projectId Should be an existing projectId
+    */
+    function setCompletedStage(uint256 projectId, uint256 o)
+        public
+        projectExists(projectId)
+        onlyOwner(projectId)
+    {
+        Project storage project = projects[projectId];
+        project.state = State.CANCELED;
+        emit ProjectCanceled(projectId);
     }
 }
