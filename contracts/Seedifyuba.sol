@@ -132,7 +132,7 @@ contract Seedifyuba is Ownable {
         @notice Checks that the caller is the owner of the project, reverts otherwise
         @param projectId Identifier of the project that we are dealing with
     */
-    modifier onlyOwner(uint256 projectId) {
+    modifier onlyProjectOwner(uint256 projectId) {
         require(msg.sender == projects[projectId].owner, "not project owner");
         _;
     }
@@ -352,10 +352,10 @@ contract Seedifyuba is Ownable {
         Only owner can cancel projects
         @param projectId Should be an existing projectId
     */
-    function setCompletedStage(uint256 projectId, uint256 o)
+    function cancelProject(uint256 projectId, uint256 o)
         public
         projectExists(projectId)
-        onlyOwner(projectId)
+        onlyProjectOwner(projectId)
     {
         Project storage project = projects[projectId];
         project.state = State.CANCELED;
