@@ -229,7 +229,54 @@ paths:
                   - $ref: '#/components/schemas/ProjectDataDTO'
                   - $ref: '#/components/schemas/ProjectSCDataDTO'
         404:
-          description: Usuario no encontrado.
+          description: Proyecto no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+    patch:
+      tags:
+        - Projects
+      summary: Modificacion de Proyecto
+      description: Actualiza la informacion de un proyecto en SC.
+      operationId: updateProject
+      parameters:
+        - in: path
+          name: hash
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Datos del usuario patrocinador del proyecto
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                owner_id:
+                  description: Id del Usuario propietario. Este es el emprendedor del proyecto.
+                  type: string
+                  example: 'emprendedor_1'
+                state:
+                  enum: ['CANCELED']
+        required: true
+      responses:
+        200:
+          description: Operacion Exitosa. Dependiendo del Source la estructura de la respuesta cambia.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ProjectDataDTO'
+                  - $ref: '#/components/schemas/ProjectSCDataDTO'
+        404:
+          description: Proyecto no encontrado.
           content:
             application/json:
               schema:
@@ -273,6 +320,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
+        404:
+          description: Proyecto no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
         500:
           description: Ocurrio un error inesperado.
           content:
@@ -312,6 +365,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequestResponse'
+        404:
+          description: Proyecto no encontrado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
         500:
           description: Ocurrio un error inesperado.
           content:
