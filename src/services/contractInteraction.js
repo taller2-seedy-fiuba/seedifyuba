@@ -3,6 +3,7 @@ const projectDao = require('../db/project-dao');
 const stageDao = require('../db/stage-dao');
 const reviewDao = require('../db/review-dao');
 const calculations = require('./calculations');
+const contractAdapter = require('./contractAdapter');
 
 const getContract = (config, wallet) => {
   return new ethers.Contract(config.contractAddress, config.contractAbi, wallet);
@@ -29,21 +30,22 @@ const createProject = ({ config }) => async (
     console.log(firstEvent);
     if (firstEvent && firstEvent.event == "ProjectCreated") {
       const projectId = firstEvent.args.projectId.toNumber();
-      console.log("project id ["+projectId+"]");
+      console.log("project id ["+projectId+"] was created");
       seedyFiuba.projects(projectId)
         .then(projectSC => {
-          const project = {
+          const project = contractAdapter.adaptProjectFromSC(projectSC);
+          const projectToAdd = {
             projectId: projectId,
             hash: tx.hash,
             projectOwnerAddress: projectOwnerAddress,
             projectReviewerAddress: projectReviewerAddress,
             stagesCost: stagesCost,
-            state: projectSC.state,
-            currentStage: projectSC.currentStage.toNumber(),
+            state: project.state,
+            currentStage: project.currentStage,
             totalAmountNeeded: totalAmountNeeded,
             missingAmount: totalAmountNeeded
           }
-          addProject(project);
+          addProject(projectToAdd);
         });
     } else {
       console.error(`Project not created in tx ${tx.hash}`);
@@ -119,11 +121,12 @@ const fundProject = ({ config }) => async (funderWallet, projectId, founds) =>{
       console.log('Project with id ['+projectId+'] was funded with ['+funds+'] by ['+funderAddress+']');
       seedyFiuba.projects(projectId)
         .then(projectSC => {
+          const project = contractAdapter.adaptProjectFromSC(projectSC);
           const updates = {
             projectId: projectId,
-            state: projectSC.state,
-            currentStage: projectSC.currentStage.toNumber(),
-            missingAmount: projectSC.missingAmount
+            state: project.state,
+            currentStage: project.currentStage,
+            missingAmount: project.missingAmount
           }
           updateProject(updates);
         });
@@ -161,11 +164,12 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
       }
       seedyFiuba.projects(projectId)
         .then(projectSC => {
+          const project = contractAdapter.adaptProjectFromSC(projectSC);
           const updates = {
             projectId: projectId,
-            state: projectSC.state,
-            currentStage: projectSC.currentStage.toNumber(),
-            missingAmount: projectSC.missingAmount.toNumber()
+            state: project.state,
+            currentStage: project.currentStage,
+            missingAmount: project.missingAmount
           }
           updateProject(updates);
         });
@@ -176,9 +180,40 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
   return tx;
 }
 
+const cancelProject = ({ config }) => async (ownerWallet, projectId) =>{
+  console.log('Canceling project with ID ['+projectId+']');
+  const seedyFiuba = await getContract(config, ownerWallet);
+  console.dir(seedyFiuba);
+  const tx = await seedyFiuba.cancelProject(projectId);
+  tx.wait(1).then(receipt => {
+    console.log("Transaction mined");
+    const firstEvent = receipt && receipt.events && receipt.events[0];
+    console.log(firstEvent);
+    if (firstEvent && firstEvent.event == "ProjectCanceled") {
+      const projectId = firstEvent.args.projectId.toNumber();
+      console.log("project with id ["+projectId+"] was canceled");
+      seedyFiuba.projects(projectId)
+        .then(projectSC => {
+          const project = contractAdapter.adaptProjectFromSC(projectSC);
+          const updates = {
+            projectId: projectId,
+            state: project.state,
+            currentStage: project.currentStage,
+            missingAmount: project.missingAmount
+          }
+          updateProject(updates);
+        });
+    } else {
+      console.error(`Project not canceled in tx ${tx.hash}`);
+    }
+  });
+  return tx;
+};
+
 module.exports = dependencies => ({
   createProject: createProject(dependencies),
   getProject: getProject(dependencies),
   fundProject: fundProject(dependencies),
-  setCompletedStageOfProject: setCompletedStageOfProject(dependencies)
+  setCompletedStageOfProject: setCompletedStageOfProject(dependencies),
+  cancelProject: cancelProject(dependencies)
 });
