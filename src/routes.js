@@ -113,7 +113,7 @@ function transfersRoute({ services, config }) {
 function transactionsRoute({ services, config }) {
   return {
     method: "GET",
-    url: "/transactions/:user_id",
+    url: "/transactions/:address",
     schema: getTransactions.schema(config),
     handler: getTransactions.handler({ config, ...services }),
   };

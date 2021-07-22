@@ -4,6 +4,7 @@ const stageDao = require('../db/stage-dao');
 const reviewDao = require('../db/review-dao');
 const calculations = require('./calculations');
 const contractAdapter = require('./contractAdapter');
+const transactions = require('./transactions');
 
 const getContract = (config, wallet) => {
   return new ethers.Contract(config.contractAddress, config.contractAbi, wallet);
@@ -46,9 +47,11 @@ const createProject = ({ config }) => async (
             missingAmount: totalAmountNeeded
           }
           addProject(projectToAdd);
+          transactions.logTransaction(tx.hash, 'SUCCESS', deployerWallet.address, projectId, 'Project created');
         });
     } else {
       console.error(`Project not created in tx ${tx.hash}`);
+      transactions.logTransaction(tx.hash, 'FAILURE', deployerWallet.address, null, 'Project not created');
     }
   });
   return tx;
@@ -123,9 +126,11 @@ const fundProject = ({ config }) => async (funderWallet, projectId, founds) =>{
             missingAmount: project.missingAmount
           }
           updateProject(updates);
+          transactions.logTransaction(tx.hash, 'SUCCESS', funderWallet.address, projectId, 'Project funded');
         });
     } else {
       console.error(`Project not funded in tx ${tx.hash}`);
+      transactions.logTransaction(tx.hash, 'FAILURE', funderWallet.address, projectId, 'Project not funded');
     }
   });
   return tx;
@@ -166,9 +171,11 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
             missingAmount: project.missingAmount
           }
           updateProject(updates);
+          transactions.logTransaction(tx.hash, 'SUCCESS', reviewerWallet.address, projectId, 'Stage completed');
         });
     } else {
       console.error(`Stage not completed in tx ${tx.hash}`);
+      transactions.logTransaction(tx.hash, 'FAILURE', reviewerWallet.address, projectId, 'Stage not completed');
     }
   });
   return tx;
@@ -196,9 +203,11 @@ const cancelProject = ({ config }) => async (ownerWallet, projectId) =>{
             missingAmount: project.missingAmount
           }
           updateProject(updates);
+          transactions.logTransaction(tx.hash, 'SUCCESS', ownerWallet.address, projectId, 'Project canceled');
         });
     } else {
       console.error(`Project not canceled in tx ${tx.hash}`);
+      transactions.logTransaction(tx.hash, 'FAILURE', ownerWallet.address, projectId, 'Project not canceled');
     }
   });
   return tx;

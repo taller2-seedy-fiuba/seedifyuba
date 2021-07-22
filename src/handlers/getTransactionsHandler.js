@@ -9,9 +9,9 @@ const queryStringJsonSchema = {
 
 const paramsJsonSchema = {
   type: 'object',
-  required: ["user_id"],
+  required: ["address"],
   properties: {
-    user_id: { type: 'string' }
+    address: { type: 'string' }
   }
 }
 
@@ -24,7 +24,7 @@ function schema() {
 
 function handler({ transactionService }) {
   return async function (req, reply) {
-    const body = await transactionService.getTransactions(req.params.user_id, req.query.page, req.query.page_size);
+    const body = await transactionService.getTransactions(req.params.address, req.query.page, req.query.page_size);
     reply.code(200).send(body);
   };
 }

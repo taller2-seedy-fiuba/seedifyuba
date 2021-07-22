@@ -3,16 +3,16 @@ const adapter = require('./result-adapter');
 
 const TRANSACTIONS_TABLE = 'TRANSACTIONS';
 
-const SELECT = 'SELECT hash, status, message, user_id, project_id, timestamp FROM ' + TRANSACTIONS_TABLE;
+const SELECT = 'SELECT hash, status, message, address, project_id, timestamp FROM ' + TRANSACTIONS_TABLE;
 
 const SELECT_BY_HASH = SELECT + ' WHERE hash = $1';
 
-const SELECT_BY_USER = SELECT + ' WHERE user_id = $1 ORDER BY timestamp LIMIT $2 OFFSET $3';
+const SELECT_BY_USER = SELECT + ' WHERE address = $1 ORDER BY timestamp LIMIT $2 OFFSET $3';
 
 const INSERT =
   'INSERT INTO ' +
   TRANSACTIONS_TABLE +
-  ' (hash, status, message, user_id, project_id, timestamp) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
+  ' (hash, status, message, address, project_id, timestamp) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
 
 const insert = (tx) => {
   return new Promise((resolve, reject) => {
@@ -46,10 +46,10 @@ const select = () => {
   });
 }
 
-const selectByUser = (userId, limit, offset) => {
+const selectByUser = (address, limit, offset) => {
   return new Promise((resolve, reject) => {
     queries.executeQueryWithParams(SELECT_BY_USER, [
-      userId,
+      address,
       limit,
       offset
     ])
