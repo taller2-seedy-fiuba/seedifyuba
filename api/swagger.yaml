@@ -11,6 +11,10 @@ tags:
     description: Wallet de los Usuarios en SeedyFiuba
   - name: Projects
     description: Proyectos en el SmartContract en SeedyFiuba
+  - name: Transfers
+    description: Transferencias entre los Usuarios de SeedyFiuba
+  - name: Transactions
+    description: Transacciones de los Usuarios en SeedyFiuba
 paths:
   /wallets:
     get:
@@ -183,11 +187,11 @@ paths:
         required: true
       responses:
         202:
-          description: El usuario ha sido creado correctamente.
+          description: Transaccion para crear proyecto realizada correctamente.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionDataDTO'
+                $ref: '#/components/schemas/TransactionAcceptedDTO'
         400:
           description: Bad Request. Alguno de los campos ingresados en invalido o esta incompleto.
           content:
@@ -267,14 +271,12 @@ paths:
                   enum: ['CANCELED']
         required: true
       responses:
-        200:
-          description: Operacion Exitosa. Dependiendo del Source la estructura de la respuesta cambia.
+        202:
+          description: Transaccion para actualizar estado de proyecto realizada correctamente.
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/ProjectDataDTO'
-                  - $ref: '#/components/schemas/ProjectSCDataDTO'
+                $ref: '#/components/schemas/TransactionAcceptedDTO'
         404:
           description: Proyecto no encontrado.
           content:
@@ -309,7 +311,7 @@ paths:
         required: true
       responses:
         202:
-          description: El usuario ha sido creado correctamente.
+          description: Transaccion para fondear proyecto realizada correctamente.
           content:
             application/json:
               schema:
@@ -354,7 +356,7 @@ paths:
         required: true
       responses:
         202:
-          description: El usuario ha sido creado correctamente.
+          description: Transaccion para stagear proyecto realizada correctamente.
           content:
             application/json:
               schema:
@@ -393,7 +395,7 @@ paths:
         required: true
       responses:
         202:
-          description: El usuario ha sido creado correctamente.
+          description: Transaccion para transferir realizada correctamente.
           content:
             application/json:
               schema:
@@ -411,7 +413,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
       x-codegen-request-body-name: transfer
-  /transactions/{address}:
+  /transactions:
     get:
       tags:
         - Transactions
@@ -419,7 +421,7 @@ paths:
       description: Obtiene las transacciones de un usuario segun su address
       operationId: getUserTransactions
       parameters:
-        - in: path
+        - in: query
           name: address
           required: true
           schema:
@@ -435,8 +437,8 @@ paths:
           schema:
             type: integer
       responses:
-        202:
-          description: El usuario ha sido creado correctamente.
+        200:
+          description: Transferencias obtendias correctamente
           content:
             application/json:
               schema:
@@ -467,8 +469,8 @@ paths:
           schema:
             type: string
       responses:
-        202:
-          description: El usuario ha sido creado correctamente.
+        200:
+          description: Transferencia obtenida correctamente.
           content:
             application/json:
               schema:
@@ -689,8 +691,29 @@ components:
         amount:
           description: Monto a transferir
           type: string
+    TransactionAcceptedDTO:
+      type: object
+      properties:
+        hash:
+          type: string
     TransactionDataDTO:
       type: object
+      properties:
+        hash:
+          type: string
+        status:
+          type: string
+          enum: [SUCCESSFUL, FAILURE]
+          example: 'SUCCESSFUL'
+        message:
+          type: string
+          example: 'operacion exitosa'
+        project_id:
+          type: integer
+          format: int64
+        timestamp:
+          type: string
+          format: date-time
     ApiResponse:
       type: object
       properties:
