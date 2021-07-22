@@ -20,7 +20,7 @@ const insert = (tx) => {
       tx.hash,
       tx.status,
       tx.message,
-      tx.userId,
+      tx.address,
       tx.projectId,
       tx.timestamp
     ])

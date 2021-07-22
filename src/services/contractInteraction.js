@@ -4,7 +4,7 @@ const stageDao = require('../db/stage-dao');
 const reviewDao = require('../db/review-dao');
 const calculations = require('./calculations');
 const contractAdapter = require('./contractAdapter');
-const transactions = require('./transactions');
+const transactions = require("./transactions");
 
 const getContract = (config, wallet) => {
   return new ethers.Contract(config.contractAddress, config.contractAbi, wallet);
@@ -16,6 +16,7 @@ const createProject = ({ config }) => async (
   projectOwnerAddress,
   projectReviewerAddress,
 ) => {
+  console.dir(config);
   console.log("Creating project with costs {"+stagesCost+"}, owner address ["+projectOwnerAddress+"] and reviewer address ["+projectReviewerAddress+"]");
   const seedyFiuba = await getContract(config, deployerWallet);
   const totalAmountNeeded = stagesCost.reduce((accumulator, current) => {

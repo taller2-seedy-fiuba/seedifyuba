@@ -1,6 +1,6 @@
 const transactionDao = require('../db/transaction-dao');
 
-const getTransactions = () => async (address, page, pageSize) => {
+const getTransactions = async (address, page, pageSize) => {
   console.log("Getting Transactions with address ["+address+"] page ["+page+"] and page size ["+pageSize+"]");
   const limit = pageSize;
   const offset = (page && page > 0) ? (page - 1) * pageSize : 0;
@@ -8,7 +8,7 @@ const getTransactions = () => async (address, page, pageSize) => {
   return transactions;
 };
 
-const logTransaction = () => async (hash, status, address, projectId, message) => {
+const logTransaction = async (hash, status, address, projectId, message) => {
   console.log("Transaction with hash ["+hash+"] status ["+status+"] address ["+address+"] projectId ["+projectId+"] message ["+message+"]");
   const tx ={
     hash: hash,
@@ -21,4 +21,4 @@ const logTransaction = () => async (hash, status, address, projectId, message) =
   await transactionDao.insert(tx);
 }
 
-module.exports = { getTransactions, logTransaction, };
+module.exports = { getTransactions, logTransaction }

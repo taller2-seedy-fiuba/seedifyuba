@@ -68,7 +68,7 @@ const convertTx = (txDBO) => {
     hash: txDBO['hash'],
     status: txDBO['status'],
     message: txDBO['message'],
-    userId: txDBO['user_id'],
+    address: txDBO['address'],
     projectId: txDBO['project_id']
   }
 }

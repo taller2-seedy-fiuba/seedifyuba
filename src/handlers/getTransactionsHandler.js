@@ -1,3 +1,4 @@
+const transactionService = require("../services/transactions");
 const queryStringJsonSchema = {
   type: 'object',
   required: ["page", "page_size"],
@@ -22,7 +23,7 @@ function schema() {
   };
 }
 
-function handler({ transactionService }) {
+function handler() {
   return async function (req, reply) {
     const body = await transactionService.getTransactions(req.params.address, req.query.page, req.query.page_size);
     reply.code(200).send(body);
