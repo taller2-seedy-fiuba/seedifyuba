@@ -8,6 +8,12 @@ const getTransactions = async (address, page, pageSize) => {
   return transactions;
 };
 
+const getTransaction = async (hash) => {
+  console.log("Getting Transactions with hash ["+hash+"]");
+  let transaction = await transactionDao.selectByHash(hash);
+  return transaction;
+};
+
 const logTransaction = async (hash, status, address, projectId, message) => {
   console.log("Transaction with hash ["+hash+"] status ["+status+"] address ["+address+"] projectId ["+projectId+"] message ["+message+"]");
   const tx ={
@@ -21,4 +27,4 @@ const logTransaction = async (hash, status, address, projectId, message) => {
   await transactionDao.insert(tx);
 }
 
-module.exports = { getTransactions, logTransaction }
+module.exports = { getTransactions, getTransaction, logTransaction }
