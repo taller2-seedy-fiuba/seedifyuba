@@ -62,4 +62,31 @@ const convertWallet = (walletDBO) => {
   }
 }
 
-module.exports = {adaptProject, adaptProjects, adaptWallet, adaptWallets}
+const convertTx = (txDBO) => {
+  if(!txDBO) return null;
+  return {
+    hash: txDBO['hash'],
+    status: txDBO['status'],
+    message: txDBO['message'],
+    userId: txDBO['user_id'],
+    projectId: txDBO['project_id']
+  }
+}
+
+const adaptTx = (result) => {
+  if(result.rows.length === 1){
+    const walletDBO = result.rows[0];
+    return convertTx(walletDBO);
+  }
+  return null;
+}
+
+const adaptTxs = (result) => {
+  let txs = [];
+  for (let i = 0; i < result.rows.length; i++) {
+    txs.push(convertTx(result.rows[i]));
+  }
+  return txs;
+}
+
+module.exports = {adaptProject, adaptProjects, adaptWallet, adaptWallets, adaptTx, adaptTxs}

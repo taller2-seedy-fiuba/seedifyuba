@@ -411,6 +411,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
       x-codegen-request-body-name: transfer
+  /transactions/{user_id}:
+    get:
+      tags:
+        - Transactions
+      summary: Transacciones
+      description: Obtiene las transacciones de un usuario
+      operationId: getUserTransactions
+      parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: page
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: page_size
+          required: true
+          schema:
+            type: integer
+      responses:
+        202:
+          description: El usuario ha sido creado correctamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionDataDTO'
+        400:
+          description: Bad Request. Alguno de los campos ingresados en invalido o esta incompleto.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestResponse'
+        500:
+          description: Ocurrio un error inesperado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnexpectedErrorResponse'
+      x-codegen-request-body-name: transfer
 components:
   schemas:
     UserInputDTO:

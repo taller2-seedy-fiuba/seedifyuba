@@ -9,6 +9,7 @@ const foundProject = require("./handlers/fundProjectHandler");
 const completeStage = require("./handlers/completeStageHandler");
 const chargeWallet = require("./handlers/chargeWalletHandler");
 const doTransfer = require("./handlers/doTransferHandler");
+const getTransactions = require("./handlers/getTransactionsHandler");
 
 function getWalletsDataRoute({ services, config }) {
   return {
@@ -109,4 +110,13 @@ function transfersRoute({ services, config }) {
   };
 }
 
-module.exports = [ getWalletRoute, getWalletDataRoute, getWalletsDataRoute, createWalletRoute, createProjectRoute, updateStatusProjectRoute, getProjectRoute, fundProjectRoute, completeStageRoute, chargeWalletRoute, transfersRoute ];
+function transactionsRoute({ services, config }) {
+  return {
+    method: "GET",
+    url: "/transactions/:user_id",
+    schema: getTransactions.schema(config),
+    handler: getTransactions.handler({ config, ...services }),
+  };
+}
+
+module.exports = [ getWalletRoute, getWalletDataRoute, getWalletsDataRoute, createWalletRoute, createProjectRoute, updateStatusProjectRoute, getProjectRoute, fundProjectRoute, completeStageRoute, chargeWalletRoute, transfersRoute, transactionsRoute ];
