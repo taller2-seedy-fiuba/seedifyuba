@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Smart Contract API SeedyFiuba
   description: 'API de interaccion con el SmartContract de SeedyFiuba'
-  version: 1.0.0
+  version: 1.1.0
 servers:
   - url: https://seedy-fiuba-g1-seedifyuba.herokuapp.com
   - url: http://localhost:5000
