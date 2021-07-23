@@ -1,8 +1,8 @@
 const bodyJsonSchema = {
   type: "object",
-  required: ["user_id"],
+  required: ["ownerId"],
   properties: {
-    user_id: {
+    ownerId: {
       type: "string",
     },
   }

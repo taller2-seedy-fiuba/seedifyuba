@@ -47,7 +47,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserInputDTO'
+              $ref: '#/components/schemas/WalletInputDTO'
         required: true
       responses:
         201:
@@ -489,11 +489,11 @@ paths:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
 components:
   schemas:
-    UserInputDTO:
+    WalletInputDTO:
       type: object
       properties:
-        username:
-          description: Nombre de Usuario. Identificador unico de cada Usuario.
+        ownerId:
+          description: Nombre de Usuario. Identificador unico de cada Usuario dueño de la wallet
           type: string
           example: 'usuario1'
     FunderInputDTO:
