@@ -105,13 +105,14 @@ const getProject = ({ config }) => async (hash, source, deployerWallet) => {
   if(!source || source == 'database'){
     return project;
   }
-  if(source == 'contract'){
+  if(project && source == 'contract'){
     const seedyFiuba = await getContract(config, deployerWallet);
     const projectSC = await seedyFiuba.projects(project.id);
     console.log('SC Project');
     console.dir(projectSC);
     return contractAdapter.adaptProjectFromSC(projectSC);
   }
+  return null;
 };
 
 const updateProject = async (updates) => {

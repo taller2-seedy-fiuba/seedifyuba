@@ -45,6 +45,7 @@ const getWallet = ({}) => async id => {
   const walletData = await walletDao.selectById(id);
   console.log("Wallet Data found");
   console.dir(walletData);
+  if(!walletData) return null;
   const wallet = new ethers.Wallet(walletData.privateKey, provider);
   wallet.balance = await wallet.getBalance();
   return wallet;

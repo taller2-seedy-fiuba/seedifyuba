@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Smart Contract API SeedyFiuba
   description: 'API de interaccion con el SmartContract de SeedyFiuba'
-  version: 1.2.0
+  version: 1.3.0
 servers:
   - url: https://seedifyuba-taller2.herokuapp.com
   - url: http://localhost:5000
@@ -186,12 +186,12 @@ paths:
               $ref: '#/components/schemas/ProjectInputDTO'
         required: true
       responses:
-        202:
+        200:
           description: Transaccion para crear proyecto realizada correctamente.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionAcceptedDTO'
+                $ref: '#/components/schemas/TransactionDataDTO'
         400:
           description: Bad Request. Alguno de los campos ingresados en invalido o esta incompleto.
           content:
@@ -271,12 +271,12 @@ paths:
                   enum: ['CANCELED']
         required: true
       responses:
-        202:
+        200:
           description: Transaccion para actualizar estado de proyecto realizada correctamente.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionAcceptedDTO'
+                $ref: '#/components/schemas/TransactionDataDTO'
         404:
           description: Proyecto no encontrado.
           content:
@@ -310,7 +310,7 @@ paths:
               $ref: '#/components/schemas/FunderInputDTO'
         required: true
       responses:
-        202:
+        200:
           description: Transaccion para fondear proyecto realizada correctamente.
           content:
             application/json:
@@ -355,7 +355,7 @@ paths:
               $ref: '#/components/schemas/ReviewerInputDTO'
         required: true
       responses:
-        202:
+        200:
           description: Transaccion para stagear proyecto realizada correctamente.
           content:
             application/json:
@@ -394,7 +394,7 @@ paths:
               $ref: '#/components/schemas/TransferDTO'
         required: true
       responses:
-        202:
+        200:
           description: Transaccion para transferir realizada correctamente.
           content:
             application/json:
@@ -698,11 +698,6 @@ components:
         amount:
           description: Monto a transferir
           type: string
-    TransactionAcceptedDTO:
-      type: object
-      properties:
-        hash:
-          type: string
     TransactionDataDTO:
       type: object
       properties:
@@ -745,6 +740,8 @@ components:
         - $ref: '#/components/schemas/ApiResponse'
         - type: object
           properties:
+            status:
+              example: 'FAILURE'
             error:
               example: 'Bad Request'
             statusCode:
@@ -759,9 +756,11 @@ components:
             status:
               example: 'FAILURE'
             code:
-              example: 'wallet_not_found'
+              example: 'resource_not_found'
+            statusCode:
+              example: 400
             message:
-              example: 'Wallet was not found!'
+              example: 'Resource was not found!'
     UnexpectedErrorResponse:
       type: object
       allOf:
@@ -772,5 +771,7 @@ components:
               example: 'FAILURE'
             code:
               example: 'unexpected_error'
+            statusCode:
+              example: 500
             message:
-              example: 'Unexpected Error'
+              example: 'Unexpected Error!'

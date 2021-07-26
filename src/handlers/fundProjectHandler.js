@@ -33,6 +33,18 @@ function handler({ contractInteraction, walletService }) {
       contractInteraction.getProject(projectHash),
       walletService.getWallet(req.body.funder_id)
     ]);
+    if(!project) reply.code(404).send({
+      status: 'FAILURE',
+      code: 'PROJECT_NOT_FOUND',
+      message: 'Project with hash [' +projectHash+ '] not found',
+      statusCode: 404
+    });
+    if(!funderWallet) reply.code(404).send({
+      status: 'FAILURE',
+      code: 'WALLET_NOT_FOUND',
+      message: 'Wallet of user with id [' +req.body.funder_id+ '] not found',
+      statusCode: 404
+    });
     const fundProjectTx = await contractInteraction.fundProject(funderWallet, project.id, funds);
     return reply.code(200).send(fundProjectTx);
   };

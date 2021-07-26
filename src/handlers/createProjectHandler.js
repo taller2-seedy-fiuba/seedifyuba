@@ -30,6 +30,18 @@ function handler({ contractInteraction, walletService }) {
       walletService.getWalletData(req.body.ownerId),
       walletService.getWalletData(req.body.reviewerId)
     ]);
+    if(!ownerWalletData) reply.code(404).send({
+      status: 'FAILURE',
+      code: 'WALLET_NOT_FOUND',
+      message: 'Wallet of user with id [' +req.body.ownerId+ '] not found',
+      statusCode: 404
+    });
+    if(!reviewerWalletData) reply.code(404).send({
+      status: 'FAILURE',
+      code: 'WALLET_NOT_FOUND',
+      message: 'Wallet of user with id [' +req.body.reviewerId+ '] not found',
+      statusCode: 404
+    });
     const createProjectTx = await contractInteraction.createProject(
       walletDeployer,
       stagesCost,
