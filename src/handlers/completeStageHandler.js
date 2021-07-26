@@ -28,13 +28,13 @@ function schema() {
 function handler({ contractInteraction, walletService }) {
   return async function (req, reply) {
     const projectHash = req.params.hash;
-    const project = contractInteraction.getProject(projectHash);
-    const reviewerWallet = walletService.getWallet(req.body.reviewer_id);
     const stageCompleted = req.body.stage_completed;
-    await project;
-    await reviewerWallet;
+    const [project, reviewerWallet] = await Promise.all([
+      contractInteraction.getProject(projectHash),
+      walletService.getWallet(req.body.reviewer_id)
+    ]);
     const fundProjectTx = await contractInteraction.setCompletedStageOfProject(reviewerWallet, project.id, stageCompleted);
-    return reply.code(202).send(fundProjectTx);
+    return reply.code(200).send(fundProjectTx);
   };
 }
 

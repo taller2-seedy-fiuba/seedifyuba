@@ -27,7 +27,7 @@ function handler({ walletService }) {
     const userId = req.params.user_id;
     const amount = req.body.amount;
     const chargeTx = await walletService.chargeWallet(userId, amount);
-    return reply.code(202).send(chargeTx);
+    return reply.code(200).send(chargeTx);
   };
 }
 

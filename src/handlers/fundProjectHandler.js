@@ -28,13 +28,13 @@ function schema() {
 function handler({ contractInteraction, walletService }) {
   return async function (req, reply) {
     const projectHash = req.params.hash;
-    const project = contractInteraction.getProject(projectHash);
-    const funderWallet = walletService.getWallet(req.body.funder_id);
     const funds = req.body.funds;
-    await project;
-    await funderWallet;
+    const [project, funderWallet] = await Promise.all([
+      contractInteraction.getProject(projectHash),
+      walletService.getWallet(req.body.funder_id)
+    ]);
     const fundProjectTx = await contractInteraction.fundProject(funderWallet, project.id, funds);
-    return reply.code(202).send(fundProjectTx);
+    return reply.code(200).send(fundProjectTx);
   };
 }
 
