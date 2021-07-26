@@ -4,7 +4,7 @@ info:
   description: 'API de interaccion con el SmartContract de SeedyFiuba'
   version: 1.2.0
 servers:
-  - url: https://seedy-fiuba-g1-seedifyuba.herokuapp.com
+  - url: https://seedifyuba-taller2.herokuapp.com
   - url: http://localhost:5000
 tags:
   - name: Wallets
