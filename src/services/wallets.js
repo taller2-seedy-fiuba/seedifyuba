@@ -4,7 +4,7 @@ const calculations = require('./calculations');
 const transactions = require("./transactions");
 const {transactionMessage, transactionStatus, transactionFlow} = require("../model/transaction");
 
-const getDeployerWallet = ({ config }) => () => {
+const getDeployerWallet = ({ config }) => async () => {
   console.log("Getting Deployer Wallet");
   const provider = new ethers.providers.InfuraProvider(config.network, config.infuraApiKey);
   return ethers.Wallet.fromMnemonic(config.deployerMnemonic).connect(provider);
@@ -16,7 +16,7 @@ const createWallet = () => async ownerId => {
   // This may break in some environments, keep an eye on it
   const wallet = ethers.Wallet.createRandom().connect(provider);
   wallet.id = ownerId;
-  let walletCreated = await walletDao.insert(wallet);
+  const walletCreated = await walletDao.insert(wallet);
   const result = {
     id: walletCreated.id,
     address: walletCreated.address,
@@ -27,13 +27,13 @@ const createWallet = () => async ownerId => {
 
 const getWalletsData = () => async () => {
   console.log("Getting Wallets Data");
-  let wallets = await walletDao.select();
+  const wallets = await walletDao.select();
   return wallets;
 };
 
 const getWalletData = () => async id => {
   console.log("Getting Wallet Data with id ["+id+"]");
-  let wallet = await walletDao.selectById(id);
+  const wallet = await walletDao.selectById(id);
   console.log("Wallet Data found");
   console.dir(wallet);
   return wallet;
@@ -69,7 +69,14 @@ const chargeWallet = ({config}) => async (id, amount) => {
     console.log(tx);
     transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, deployerWallet.address, null, transactionMessage.AMOUNT_SENT, transactionFlow.OUT);
     transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, wallet.address, null, transactionMessage.AMOUNT_RECEIVED, transactionFlow.IN);
-    return tx;
+    return {
+      hast: tx.hash,
+      status: transactionStatus.SUCCESS,
+      address: wallet.address,
+      project_id: null,
+      message: transactionMessage.AMOUNT_RECEIVED,
+      flow: transactionFlow.IN
+    }
   });
 }
 
@@ -87,7 +94,14 @@ const transfer = ({config}) => async (sender, receiverAddress, amount) => {
     console.log(tx);
     transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, sender.address, null, transactionMessage.AMOUNT_SENT, transactionFlow.OUT);
     transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, receiverAddress, null, transactionMessage.AMOUNT_RECEIVED, transactionFlow.IN);
-    return tx;
+    return {
+      hast: tx.hash,
+      status: transactionStatus.SUCCESS,
+      address: sender.address,
+      project_id: null,
+      message: transactionMessage.AMOUNT_SENT,
+      flow: transactionFlow.OUT
+    }
   });
 }
 

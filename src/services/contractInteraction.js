@@ -6,6 +6,7 @@ const calculations = require('./calculations');
 const contractAdapter = require('./contractAdapter');
 const transactions = require("./transactions");
 const {transactionMessage, transactionStatus, transactionFlow} = require("../model/transaction");
+const getRevertReason = require('eth-revert-reason');
 
 const getContract = (config, wallet) => {
   return new ethers.Contract(config.contractAddress, config.contractAbi, wallet);
@@ -27,41 +28,56 @@ const createProject = ({ config }) => async (
   const costs = stagesCost.map(calculations.fromMilliToEther).map(calculations.toWei);
   console.log('Final Costs [' + costs +']');
   const tx = await seedyFiuba.createProject(costs, projectOwnerAddress, projectReviewerAddress);
-  tx.wait(1).then(receipt => {
-    console.log("Transaction mined");
-    const firstEvent = receipt && receipt.events && receipt.events[0];
-    console.log(firstEvent);
-    if (firstEvent && firstEvent.event == "ProjectCreated") {
-      const projectId = firstEvent.args.projectId.toNumber();
-      console.log("project id ["+projectId+"] was created");
-      seedyFiuba.projects(projectId)
-        .then(projectSC => {
-          const project = contractAdapter.adaptProjectFromSC(projectSC);
-          const projectToAdd = {
-            projectId: projectId,
-            hash: tx.hash,
-            projectOwnerAddress: projectOwnerAddress,
-            projectReviewerAddress: projectReviewerAddress,
-            stagesCost: stagesCost,
-            state: project.state,
-            currentStage: project.currentStage,
-            totalAmountNeeded: totalAmountNeeded,
-            missingAmount: totalAmountNeeded
-          }
-          addProject(projectToAdd);
-          transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, deployerWallet.address, projectId, transactionMessage.PROJECT_CREATED, transactionFlow.OUT);
-          transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, projectOwnerAddress, projectId, transactionMessage.PROJECT_CREATED, transactionFlow.OUT);
-        });
-    } else {
-      console.error(`Project not created in tx ${tx.hash}`);
-      transactions.logTransaction(tx.hash, transactionStatus.FAILURE, deployerWallet.address, null, transactionMessage.PROJECT_NOT_CREATED, transactionFlow.OUT);
-      transactions.logTransaction(tx.hash, transactionStatus.FAILURE, projectOwnerAddress, null, transactionMessage.PROJECT_NOT_CREATED, transactionFlow.OUT);
+  const receipt = await tx.wait(1);
+  console.log("Transaction mined");
+  console.log(tx);
+  const firstEvent = receipt && receipt.events && receipt.events[0];
+  console.log(firstEvent);
+  if (firstEvent && firstEvent.event == "ProjectCreated") {
+    const projectId = firstEvent.args.projectId.toNumber();
+    console.log("project id ["+projectId+"] was created");
+    const projectSC = await seedyFiuba.projects(projectId);
+    const project = contractAdapter.adaptProjectFromSC(projectSC);
+    const projectToAdd = {
+      projectId: projectId,
+      hash: tx.hash,
+      projectOwnerAddress: projectOwnerAddress,
+      projectReviewerAddress: projectReviewerAddress,
+      stagesCost: stagesCost,
+      state: project.state,
+      currentStage: project.currentStage,
+      totalAmountNeeded: totalAmountNeeded,
+      missingAmount: totalAmountNeeded
     }
-  });
-  return tx;
+    addProject(projectToAdd);
+    transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, deployerWallet.address, projectId, transactionMessage.PROJECT_CREATED, transactionFlow.OUT);
+    transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, projectOwnerAddress, projectId, transactionMessage.PROJECT_CREATED, transactionFlow.OUT);
+    return {
+      hast: tx.hash,
+      status: transactionStatus.SUCCESS,
+      address: projectOwnerAddress,
+      project_id: projectId,
+      message: transactionMessage.PROJECT_CREATED,
+      flow: transactionFlow.OUT
+    }
+  } else {
+    const reason = await getRevertReason(tx.hash, config.network)
+    console.error(`Project not created in tx ${tx.hash} with reason ${reason}`);
+    const message = transactionMessage.PROJECT_NOT_CREATED + ' - ' + reason;
+    transactions.logTransaction(tx.hash, transactionStatus.FAILURE, deployerWallet.address, null, message, transactionFlow.OUT);
+    transactions.logTransaction(tx.hash, transactionStatus.FAILURE, projectOwnerAddress, null, message, transactionFlow.OUT);
+    return {
+      hast: tx.hash,
+      status: transactionStatus.FAILURE,
+      address: projectOwnerAddress,
+      project_id: null,
+      message: message,
+      flow: transactionFlow.OUT
+    }
+  }
 };
 
-const addProject = (project) => {
+const addProject = async (project) => {
   console.log("Saving project into database");
   projectDao.insert(project).then(projectCreated => {
     let number = 1;
@@ -111,33 +127,48 @@ const fundProject = ({ config }) => async (funderWallet, projectId, founds) =>{
   const weisFunds = calculations.toWei(calculations.fromMilliToEther(founds));
   console.log('Weis funds ['+weisFunds+']');
   const tx = await seedyFiuba.fund(projectId, {value: weisFunds});
-  tx.wait(1).then(receipt => {
-    console.log("Transaction mined");
-    const firstEvent = receipt && receipt.events && receipt.events[0];
-    console.log(firstEvent);
-    if (firstEvent && firstEvent.event == "ProjectFunded") {
-      const projectId = firstEvent.args.projectId.toNumber();
-      const funderAddress = firstEvent.args.funder.toString();
-      const funds = firstEvent.args.funds;
-      console.log('Project with id ['+projectId+'] was funded with ['+funds+'] by ['+funderAddress+']');
-      seedyFiuba.projects(projectId)
-        .then(projectSC => {
-          const project = contractAdapter.adaptProjectFromSC(projectSC);
-          const updates = {
-            projectId: projectId,
-            state: project.state,
-            currentStage: project.currentStage,
-            missingAmount: project.missingAmount
-          }
-          updateProject(updates);
-          transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, funderWallet.address, projectId, transactionMessage.PROJECT_FUNDED, transactionFlow.OUT);
-        });
-    } else {
-      console.error(`Project not funded in tx ${tx.hash}`);
-      transactions.logTransaction(tx.hash, transactionStatus.FAILURE, funderWallet.address, projectId, transactionMessage.PROJECT_NOT_FUNDED, transactionFlow.OUT);
+  const receipt = await tx.wait(1);
+  console.log("Transaction mined");
+  console.log(tx);
+  const firstEvent = receipt && receipt.events && receipt.events[0];
+  console.log(firstEvent);
+  if (firstEvent && firstEvent.event == "ProjectFunded") {
+    const projectId = firstEvent.args.projectId.toNumber();
+    const funderAddress = firstEvent.args.funder.toString();
+    const funds = firstEvent.args.funds;
+    console.log('Project with id ['+projectId+'] was funded with ['+funds+'] by ['+funderAddress+']');
+    const projectSC = await seedyFiuba.projects(projectId)
+    const project = contractAdapter.adaptProjectFromSC(projectSC);
+    const updates = {
+      projectId: projectId,
+      state: project.state,
+      currentStage: project.currentStage,
+      missingAmount: project.missingAmount
     }
-  });
-  return tx;
+    updateProject(updates);
+    transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, funderWallet.address, projectId, transactionMessage.PROJECT_FUNDED, transactionFlow.OUT);
+    return {
+      hast: tx.hash,
+      status: transactionStatus.SUCCESS,
+      address: funderWallet.address,
+      project_id: projectId,
+      message: transactionMessage.PROJECT_FUNDED,
+      flow: transactionFlow.OUT
+    }
+  } else {
+    const reason = await getRevertReason(tx.hash, config.network)
+    console.error(`Project not funded in tx ${tx.hash} with reason ${reason}`);
+    const message = transactionMessage.PROJECT_NOT_FUNDED + ' - ' + reason;
+    transactions.logTransaction(tx.hash, transactionStatus.FAILURE, funderWallet.address, projectId, message, transactionFlow.OUT);
+    return {
+      hast: tx.hash,
+      status: transactionStatus.FAILURE,
+      address: funderWallet.address,
+      project_id: projectId,
+      message: message,
+      flow: transactionFlow.OUT
+    }
+  }
 }
 
 const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projectId, completedStage) =>{
@@ -149,40 +180,55 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
   const seedyFiuba = await getContract(config, reviewerWallet);
   console.dir(seedyFiuba);
   const tx = await seedyFiuba.setCompletedStage(projectId, completedStage,  {gasLimit: 100000});
-  tx.wait(1).then(receipt => {
-    console.log("Transaction mined");
-    const firstEvent = receipt && receipt.events && receipt.events[0];
-    const secondEvent = receipt && receipt.events && receipt.events[1];
-    console.log('First Event');
-    console.log(firstEvent);
-    console.log('Second Event');
-    console.log(secondEvent);
-    if (firstEvent && firstEvent.event == "StageCompleted") {
+  const receipt = await tx.wait(1)
+  console.log("Transaction mined");
+  console.log(tx);
+  const firstEvent = receipt && receipt.events && receipt.events[0];
+  const secondEvent = receipt && receipt.events && receipt.events[1];
+  console.log('First Event');
+  console.log(firstEvent);
+  console.log('Second Event');
+  console.log(secondEvent);
+  if (firstEvent && firstEvent.event == "StageCompleted") {
+    const projectId = firstEvent.args.projectId.toNumber();
+    const stageCompleted = firstEvent.args.stageCompleted.toNumber();
+    console.log('Staged ['+stageCompleted+'] completed in project with id ['+projectId+']');
+    if (secondEvent && secondEvent.event == "ProjectCompleted") {
       const projectId = firstEvent.args.projectId.toNumber();
-      const stageCompleted = firstEvent.args.stageCompleted.toNumber();
-      console.log('Staged ['+stageCompleted+'] completed in project with id ['+projectId+']');
-      if (secondEvent && secondEvent.event == "ProjectCompleted") {
-        const projectId = firstEvent.args.projectId.toNumber();
-        console.log('Project with id ['+projectId+'] is completed');
-      }
-      seedyFiuba.projects(projectId)
-        .then(projectSC => {
-          const project = contractAdapter.adaptProjectFromSC(projectSC);
-          const updates = {
-            projectId: projectId,
-            state: project.state,
-            currentStage: project.currentStage,
-            missingAmount: project.missingAmount
-          }
-          updateProject(updates);
-          transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, reviewerWallet.address, projectId, transactionMessage.STAGE_COMPLETED, transactionFlow.OUT);
-        });
-    } else {
-      console.error(`Stage not completed in tx ${tx.hash}`);
-      transactions.logTransaction(tx.hash, transactionStatus.FAILURE, reviewerWallet.address, projectId, transactionMessage.STAGE_NOT_COMPLETED, transactionFlow.OUT);
+      console.log('Project with id ['+projectId+'] is completed');
     }
-  });
-  return tx;
+    const projectSC = await seedyFiuba.projects(projectId)
+    const project = contractAdapter.adaptProjectFromSC(projectSC);
+    const updates = {
+      projectId: projectId,
+      state: project.state,
+      currentStage: project.currentStage,
+      missingAmount: project.missingAmount
+    }
+    updateProject(updates);
+    transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, reviewerWallet.address, projectId, transactionMessage.STAGE_COMPLETED, transactionFlow.OUT);
+    return {
+      hast: tx.hash,
+      status: transactionStatus.SUCCESS,
+      address: reviewerWallet.address,
+      project_id: projectId,
+      message: transactionMessage.STAGE_COMPLETED,
+      flow: transactionFlow.OUT
+    }
+  } else {
+    const reason = await getRevertReason(tx.hash, config.network)
+    console.error(`Stage not completed in tx ${tx.hash} with reason ${reason}`);
+    const message = transactionMessage.STAGE_NOT_COMPLETED + ' - ' + reason;
+    transactions.logTransaction(tx.hash, transactionStatus.FAILURE, reviewerWallet.address, projectId, message, transactionFlow.OUT);
+    return {
+      hast: tx.hash,
+      status: transactionStatus.FAILURE,
+      address: reviewerWallet.address,
+      project_id: projectId,
+      message: message,
+      flow: transactionFlow.OUT
+    }
+  }
 }
 
 const cancelProject = ({ config }) => async (ownerWallet, projectId) =>{
@@ -190,31 +236,46 @@ const cancelProject = ({ config }) => async (ownerWallet, projectId) =>{
   const seedyFiuba = await getContract(config, ownerWallet);
   console.dir(seedyFiuba);
   const tx = await seedyFiuba.cancelProject(projectId, {gasLimit: 100000});
-  tx.wait(1).then(receipt => {
-    console.log("Transaction mined");
-    const firstEvent = receipt && receipt.events && receipt.events[0];
-    console.log(firstEvent);
-    if (firstEvent && firstEvent.event == "ProjectCanceled") {
-      const projectId = firstEvent.args.projectId.toNumber();
-      console.log("project with id ["+projectId+"] was canceled");
-      seedyFiuba.projects(projectId)
-        .then(projectSC => {
-          const project = contractAdapter.adaptProjectFromSC(projectSC);
-          const updates = {
-            projectId: projectId,
-            state: project.state,
-            currentStage: project.currentStage,
-            missingAmount: project.missingAmount
-          }
-          updateProject(updates);
-          transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, ownerWallet.address, projectId, transactionMessage.PROJECT_CANCELED, transactionFlow.OUT);
-        });
-    } else {
-      console.error(`Project not canceled in tx ${tx.hash}`);
-      transactions.logTransaction(tx.hash, transactionStatus.FAILURE, ownerWallet.address, projectId, transactionMessage.PROJECT_NOT_CANCELED, transactionFlow.OUT);
+  const receipt = await tx.wait(1)
+  console.log("Transaction mined");
+  console.log(tx);
+  const firstEvent = receipt && receipt.events && receipt.events[0];
+  console.log(firstEvent);
+  if (firstEvent && firstEvent.event == "ProjectCanceled") {
+    const projectId = firstEvent.args.projectId.toNumber();
+    console.log("project with id ["+projectId+"] was canceled");
+    const projectSC = await seedyFiuba.projects(projectId)
+    const project = contractAdapter.adaptProjectFromSC(projectSC);
+    const updates = {
+      projectId: projectId,
+      state: project.state,
+      currentStage: project.currentStage,
+      missingAmount: project.missingAmount
     }
-  });
-  return tx;
+    updateProject(updates);
+    transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, ownerWallet.address, projectId, transactionMessage.PROJECT_CANCELED, transactionFlow.OUT);
+    return {
+      hast: tx.hash,
+      status: transactionStatus.SUCCESS,
+      address: ownerWallet.address,
+      project_id: projectId,
+      message: transactionMessage.PROJECT_NOT_CANCELED,
+      flow: transactionFlow.OUT
+    }
+  } else {
+    const reason = await getRevertReason(tx.hash, config.network)
+    console.error(`Project not canceled in tx ${tx.hash} with reason ${reason}`);
+    const message = transactionMessage.STAGE_NOT_COMPLETED + ' - ' + reason;
+    transactions.logTransaction(tx.hash, transactionStatus.FAILURE, ownerWallet.address, projectId, message, transactionFlow.OUT);
+    return {
+      hast: tx.hash,
+      status: transactionStatus.FAILURE,
+      address: ownerWallet.address,
+      project_id: projectId,
+      message: message,
+      flow: transactionFlow.OUT
+    }
+  }
 };
 
 module.exports = dependencies => ({
