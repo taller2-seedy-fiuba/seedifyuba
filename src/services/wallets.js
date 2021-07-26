@@ -47,7 +47,7 @@ const getWallet = ({}) => async id => {
   console.dir(walletData);
   if(!walletData) return null;
   const wallet = new ethers.Wallet(walletData.privateKey, provider);
-  wallet.balance = await wallet.getBalance();
+  wallet.balance = calculations.fromWeiToEther(await wallet.getBalance());
   return wallet;
 };
 
