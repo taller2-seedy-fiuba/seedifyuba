@@ -69,7 +69,9 @@ const convertTx = (txDBO) => {
     status: txDBO['status'],
     message: txDBO['message'],
     address: txDBO['address'],
-    projectId: txDBO['project_id']
+    project_id: txDBO['project_id'],
+    timestamp: txDBO['timestamp'],
+    flow: txDBO['flow']
   }
 }
 
