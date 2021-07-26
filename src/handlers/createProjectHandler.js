@@ -24,10 +24,13 @@ function schema() {
 
 function handler({ contractInteraction, walletService }) {
   return async function (req, reply) {
-    const walletDeployer = await walletService.getDeployerWallet();
+    const walletDeployer = walletService.getDeployerWallet();
     const stagesCost = req.body.stagesCost;
-    const ownerWalletData = await walletService.getWalletData(req.body.ownerId);
-    const reviewerWalletData = await walletService.getWalletData(req.body.reviewerId);
+    const ownerWalletData = walletService.getWalletData(req.body.ownerId);
+    const reviewerWalletData = walletService.getWalletData(req.body.reviewerId);
+    await walletDeployer;
+    await ownerWalletData;
+    await reviewerWalletData;
     const createProjectTx = await contractInteraction.createProject(
       walletDeployer,
       stagesCost,

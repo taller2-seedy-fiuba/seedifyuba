@@ -25,8 +25,10 @@ function schema() {
 function handler({ contractInteraction, walletService }) {
   return async function (req, reply) {
     const projectHash = req.params.hash;
-    const project = await contractInteraction.getProject(projectHash);
-    const ownerWallet = await walletService.getWallet(req.body.owner_id);
+    const project = contractInteraction.getProject(projectHash);
+    const ownerWallet = walletService.getWallet(req.body.owner_id);
+    await project;
+    await ownerWallet;
     const cancelProjectTx = await contractInteraction.cancelProject(ownerWallet, project.id);
     return reply.code(202).send(cancelProjectTx);
   };
