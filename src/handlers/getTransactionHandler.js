@@ -2,7 +2,7 @@ const transactionService = require("../services/transactions");
 
 const paramsJsonSchema = {
   type: 'object',
-  required: ["user_id, hash"],
+  required: ["user_id", "hash"],
   properties: {
     user_id: { type: 'string' },
     hash: { type: 'string' }
