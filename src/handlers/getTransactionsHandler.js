@@ -27,6 +27,12 @@ function schema() {
 function handler({ walletService }) {
   return async function (req, reply) {
     const walletData = await walletService.getWalletData(req.params.user_id);
+    if(!walletData) reply.code(404).send({
+      status: 'FAILURE',
+      code: 'WALLET_NOT_FOUND',
+      message: 'Wallet of user with id [' +req.params.user_id+ '] not found',
+      statusCode: 404
+    });
     const body = await transactionService.getTransactions(walletData.address, req.query.page, req.query.page_size);
     reply.code(200).send(body);
   };

@@ -21,7 +21,7 @@ function handler({ walletService }) {
     if(!walletData) reply.code(404).send({
       status: 'FAILURE',
       code: 'WALLET_NOT_FOUND',
-      message: 'Wallet of user with id [' +req.body.sender_id+ '] not found',
+      message: 'Wallet of user with id [' +req.params.user_id+ '] not found',
       statusCode: 404
     });
     const body = await transactionService.getTransaction(walletData.address, req.params.hash);
