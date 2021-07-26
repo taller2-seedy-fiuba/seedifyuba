@@ -1,6 +1,8 @@
 const ethers = require("ethers");
 const walletDao = require('../db/wallet-dao');
 const calculations = require('./calculations');
+const transactions = require("./transactions");
+const {transactionMessage, transactionStatus, transactionFlow} = require("../model/transaction");
 
 const getDeployerWallet = ({ config }) => () => {
   console.log("Getting Deployer Wallet");
@@ -65,21 +67,26 @@ const chargeWallet = ({config}) => async (id, amount) => {
   sendPromise.then((tx) => {
     console.log('Wallet charged successfully')
     console.log(tx);
+    transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, deployerWallet.address, null, transactionMessage.AMOUNT_SENT, transactionFlow.OUT);
+    transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, wallet.address, null, transactionMessage.AMOUNT_RECEIVED, transactionFlow.IN);
+    return tx;
   });
 }
 
-const transfer = ({config}) => async (sender, receiver, amount) => {
-  console.log('Transferring from ['+sender.address+'] to ['+receiver.address+'] amount ['+amount+'] MiniEthers');
+const transfer = ({config}) => async (sender, receiverAddress, amount) => {
+  console.log('Transferring from ['+sender.address+'] to ['+receiverAddress+'] amount ['+amount+'] MiniEthers');
   const amountInEthers = calculations.fromMilliToEther(amount);
   console.log('Amount In Ethers ['+amountInEthers+']');
   const tx = {
-    to: receiver.address,
+    to: receiverAddress,
     value:  ethers.utils.parseEther(amountInEthers)
   };
   const sendPromise = sender.sendTransaction(tx);
   sendPromise.then((tx) => {
     console.log('Successful Transaction');
     console.log(tx);
+    transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, sender.address, null, transactionMessage.AMOUNT_SENT, transactionFlow.OUT);
+    transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, receiverAddress, null, transactionMessage.AMOUNT_RECEIVED, transactionFlow.IN);
     return tx;
   });
 }

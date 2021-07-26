@@ -5,6 +5,7 @@ const reviewDao = require('../db/review-dao');
 const calculations = require('./calculations');
 const contractAdapter = require('./contractAdapter');
 const transactions = require("./transactions");
+const {transactionMessage, transactionStatus, transactionFlow} = require("../model/transaction");
 
 const getContract = (config, wallet) => {
   return new ethers.Contract(config.contractAddress, config.contractAbi, wallet);
@@ -48,11 +49,13 @@ const createProject = ({ config }) => async (
             missingAmount: totalAmountNeeded
           }
           addProject(projectToAdd);
-          transactions.logTransaction(tx.hash, 'SUCCESS', deployerWallet.address, projectId, 'Project created');
+          transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, deployerWallet.address, projectId, transactionMessage.PROJECT_CREATED, transactionFlow.OUT);
+          transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, projectOwnerAddress, projectId, transactionMessage.PROJECT_CREATED, transactionFlow.OUT);
         });
     } else {
       console.error(`Project not created in tx ${tx.hash}`);
-      transactions.logTransaction(tx.hash, 'FAILURE', deployerWallet.address, null, 'Project not created');
+      transactions.logTransaction(tx.hash, transactionStatus.FAILURE, deployerWallet.address, null, transactionMessage.PROJECT_NOT_CREATED, transactionFlow.OUT);
+      transactions.logTransaction(tx.hash, transactionStatus.FAILURE, projectOwnerAddress, null, transactionMessage.PROJECT_NOT_CREATED, transactionFlow.OUT);
     }
   });
   return tx;
@@ -127,11 +130,11 @@ const fundProject = ({ config }) => async (funderWallet, projectId, founds) =>{
             missingAmount: project.missingAmount
           }
           updateProject(updates);
-          transactions.logTransaction(tx.hash, 'SUCCESS', funderWallet.address, projectId, 'Project funded');
+          transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, funderWallet.address, projectId, transactionMessage.PROJECT_FUNDED, transactionFlow.OUT);
         });
     } else {
       console.error(`Project not funded in tx ${tx.hash}`);
-      transactions.logTransaction(tx.hash, 'FAILURE', funderWallet.address, projectId, 'Project not funded');
+      transactions.logTransaction(tx.hash, transactionStatus.FAILURE, funderWallet.address, projectId, transactionMessage.PROJECT_NOT_FUNDED, transactionFlow.OUT);
     }
   });
   return tx;
@@ -172,11 +175,11 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
             missingAmount: project.missingAmount
           }
           updateProject(updates);
-          transactions.logTransaction(tx.hash, 'SUCCESS', reviewerWallet.address, projectId, 'Stage completed');
+          transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, reviewerWallet.address, projectId, transactionMessage.STAGE_COMPLETED, transactionFlow.OUT);
         });
     } else {
       console.error(`Stage not completed in tx ${tx.hash}`);
-      transactions.logTransaction(tx.hash, 'FAILURE', reviewerWallet.address, projectId, 'Stage not completed');
+      transactions.logTransaction(tx.hash, transactionStatus.FAILURE, reviewerWallet.address, projectId, transactionMessage.STAGE_NOT_COMPLETED, transactionFlow.OUT);
     }
   });
   return tx;
@@ -204,11 +207,11 @@ const cancelProject = ({ config }) => async (ownerWallet, projectId) =>{
             missingAmount: project.missingAmount
           }
           updateProject(updates);
-          transactions.logTransaction(tx.hash, 'SUCCESS', ownerWallet.address, projectId, 'Project canceled');
+          transactions.logTransaction(tx.hash, transactionStatus.SUCCESS, ownerWallet.address, projectId, transactionMessage.PROJECT_CANCELED, transactionFlow.OUT);
         });
     } else {
       console.error(`Project not canceled in tx ${tx.hash}`);
-      transactions.logTransaction(tx.hash, 'FAILURE', ownerWallet.address, projectId, 'Project not canceled');
+      transactions.logTransaction(tx.hash, transactionStatus.FAILURE, ownerWallet.address, projectId, transactionMessage.PROJECT_NOT_CANCELED, transactionFlow.OUT);
     }
   });
   return tx;

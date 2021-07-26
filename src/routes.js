@@ -114,7 +114,7 @@ function transfersRoute({ services, config }) {
 function transactionsRoute({ services, config }) {
   return {
     method: "GET",
-    url: "/transactions",
+    url: "users/:user_id/transactions",
     schema: getTransactions.schema(config),
     handler: getTransactions.handler({ config, ...services }),
   };
@@ -123,7 +123,7 @@ function transactionsRoute({ services, config }) {
 function transactionRoute({ services, config }) {
   return {
     method: "GET",
-    url: "/transactions/:hash",
+    url: "users/:user_id/transactions/:hash",
     schema: getTransaction.schema(config),
     handler: getTransaction.handler({ config, ...services }),
   };

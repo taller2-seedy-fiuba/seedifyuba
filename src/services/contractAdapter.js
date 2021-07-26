@@ -1,4 +1,5 @@
 const calculations = require('./calculations');
+const {projectState} = require("../model/project");
 
 const adaptProjectFromSC = projectSC => {
   return {
@@ -16,10 +17,10 @@ const adaptStateFromSC = state => {
 }
 
 const stateMap = {
-  '0': 'FUNDING',
-  '1': 'CANCELED',
-  '2': 'IN_PROGRESS',
-  '3': 'COMPLETED'
+  '0': projectState.FUNDING,
+  '1': projectState.CANCELED,
+  '2': projectState.IN_PROGRESS,
+  '3': projectState.COMPLETED
 }
 
 module.exports = {adaptProjectFromSC, adaptStateFromSC}

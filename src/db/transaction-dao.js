@@ -3,16 +3,16 @@ const adapter = require('./result-adapter');
 
 const TRANSACTIONS_TABLE = 'TRANSACTIONS';
 
-const SELECT = 'SELECT hash, status, message, address, project_id, timestamp FROM ' + TRANSACTIONS_TABLE;
+const SELECT = 'SELECT hash, status, message, address, project_id, timestamp, flow FROM ' + TRANSACTIONS_TABLE;
 
-const SELECT_BY_HASH = SELECT + ' WHERE hash = $1';
+const SELECT_BY_ADDRESS = SELECT + ' WHERE address = $1 ORDER BY timestamp LIMIT $2 OFFSET $3';
 
-const SELECT_BY_USER = SELECT + ' WHERE address = $1 ORDER BY timestamp LIMIT $2 OFFSET $3';
+const SELECT_BY_ADDRESS_HASH = SELECT + ' WHERE address = $1 AND hash = $2';
 
 const INSERT =
   'INSERT INTO ' +
   TRANSACTIONS_TABLE +
-  ' (hash, status, message, address, project_id, timestamp) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
+  ' (hash, status, message, address, project_id, timestamp, flow) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *';
 
 const insert = (tx) => {
   return new Promise((resolve, reject) => {
@@ -22,7 +22,8 @@ const insert = (tx) => {
       tx.message,
       tx.address,
       tx.projectId,
-      tx.timestamp
+      tx.timestamp,
+      tx.flow
     ])
       .then((results) => {
         resolve(adapter.adaptTx(results));
@@ -46,9 +47,9 @@ const select = () => {
   });
 }
 
-const selectByUser = (address, limit, offset) => {
+const selectByAddress = (address, limit, offset) => {
   return new Promise((resolve, reject) => {
-    queries.executeQueryWithParams(SELECT_BY_USER, [
+    queries.executeQueryWithParams(SELECT_BY_ADDRESS, [
       address,
       limit,
       offset
@@ -62,9 +63,11 @@ const selectByUser = (address, limit, offset) => {
   });
 }
 
-const selectByHash = (hash) => {
+const selectByAddressAndHash = (address, hash) => {
   return new Promise((resolve, reject) => {
-    queries.executeQueryWithParams(SELECT_BY_HASH, [hash
+    queries.executeQueryWithParams(SELECT_BY_ADDRESS_HASH, [
+      address,
+      hash
     ])
       .then((results) => {
         resolve(adapter.adaptTx(results));
@@ -75,4 +78,4 @@ const selectByHash = (hash) => {
   });
 }
 
-module.exports = { insert, select, selectByHash, selectByUser };
+module.exports = { insert, select, selectByAddressAndHash, selectByAddress };
