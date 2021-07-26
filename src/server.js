@@ -1,6 +1,7 @@
 const config = require("./config");
 const services = require("./services/services")({ config });
 const routes = require("./routes");
+const cors = require('cors')
 
 // Require the framework and instantiate it
 const fastify = require("fastify")({ logger: true });
@@ -19,6 +20,11 @@ fastify.register(require('fastify-swagger'), {
     }
     },
   exposeRoute: true
+});
+
+//CORS
+fastify.register(require('fastify-express')).then(() => {
+  fastify.use(require('cors')());
 });
 
 // Run the server!
