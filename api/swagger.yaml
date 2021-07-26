@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: Smart Contract API SeedyFiuba
   description: 'API de interaccion con el SmartContract de SeedyFiuba'
-  version: 1.1.0
+  version: 1.2.0
 servers:
   - url: https://seedy-fiuba-g1-seedifyuba.herokuapp.com
   - url: http://localhost:5000
@@ -384,7 +384,7 @@ paths:
       tags:
         - Transfers
       summary: Transferencia
-      description: Realiza una transferencia de una Wallet a otra. Recibe el emisor, receptor y el monto a transferir en MiliEthers
+      description: SeedyFiuba permite realizar transferencias a usuarios externos. Realiza una transferencia de una Wallet a otra. Recibe el emisor, receptor y el monto a transferir en MiliEthers. El emisor debe ser un usuario registrado, mientras que el receptor tambien puede ser un tercero (externo).
       operationId: transfer
       requestBody:
         description: Datos de la transferencia, emisor, receptor y monto en MiliEthers.
@@ -413,16 +413,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
       x-codegen-request-body-name: transfer
-  /transactions:
+  /users/{user_id}/transactions:
     get:
       tags:
         - Transactions
       summary: Transacciones
-      description: Obtiene las transacciones de un usuario segun su address
+      description: Obtiene las transacciones de un usuario segun su id
       operationId: getUserTransactions
       parameters:
-        - in: query
-          name: address
+        - in: path
+          name: user_id
           required: true
           schema:
             type: string
@@ -455,14 +455,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnexpectedErrorResponse'
-  /transactions/{hash}:
+  /users/{user_id}/transactions/{hash}:
     get:
       tags:
         - Transactions
       summary: Transacciones
-      description: Obtiene una transaccion segun su hash
+      description: Obtiene la transaccion de un usuario segun su hash
       operationId: getTransaction
       parameters:
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
         - in: path
           name: hash
           required: true
@@ -683,11 +688,13 @@ components:
     TransferDTO:
       properties:
         sender_id:
-          description: ID del Emisor.
+          description: User ID del Emisor. Debe ser un usuario registrado en SeedyFiuba
           type: string
-        receiver_id:
-          description: ID Receptor o Destinatario.
+          example: 'user_1'
+        receiver_address:
+          description: Address Receptor o Destinatario. Puede o no ser un usuario registrado en Seedy Fiuba.
           type: string
+          example: '0xabcdefghi'
         amount:
           description: Monto a transferir
           type: string
@@ -708,12 +715,18 @@ components:
         message:
           type: string
           example: 'operacion exitosa'
+        addresss:
+          description: Address de quien realizó la transaccion.
+          type: string
+          example: '0x123567890'
         project_id:
           type: integer
           format: int64
         timestamp:
           type: string
           format: date-time
+        flow:
+          enum: [IN, OUT]
     ApiResponse:
       type: object
       properties:
