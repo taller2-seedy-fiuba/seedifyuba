@@ -731,7 +731,7 @@ components:
           example: 'OK'
         code:
           type: string
-          example: 'successful_operation'
+          example: 'SUCCESSFUL_OPERATION'
         message:
           type: string
           example: 'Successful Operation'
@@ -742,6 +742,8 @@ components:
           properties:
             status:
               example: 'FAILURE'
+            code:
+              example: 'BAD_REQUEST'
             error:
               example: 'Bad Request'
             statusCode:
@@ -756,7 +758,9 @@ components:
             status:
               example: 'FAILURE'
             code:
-              example: 'resource_not_found'
+              example: 'RESOURCE_NOT_FOUND'
+            error:
+              example: 'Not found'
             statusCode:
               example: 400
             message:
@@ -770,7 +774,9 @@ components:
             status:
               example: 'FAILURE'
             code:
-              example: 'unexpected_error'
+              example: 'UNEXPECTED_ERROR'
+            error:
+              example: 'Internal Server Error'
             statusCode:
               example: 500
             message:
