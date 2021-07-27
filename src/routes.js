@@ -129,4 +129,18 @@ function transactionRoute({ services, config }) {
   };
 }
 
-module.exports = [ getWalletRoute, getWalletDataRoute, getWalletsDataRoute, createWalletRoute, createProjectRoute, updateStatusProjectRoute, getProjectRoute, fundProjectRoute, completeStageRoute, chargeWalletRoute, transfersRoute, transactionsRoute, transactionRoute ];
+module.exports = [
+  getWalletRoute,
+  getWalletDataRoute,
+  getWalletsDataRoute,
+  createWalletRoute,
+  createProjectRoute,
+  updateStatusProjectRoute,
+  getProjectRoute,
+  fundProjectRoute,
+  completeStageRoute,
+  chargeWalletRoute,
+  transfersRoute,
+  transactionsRoute,
+  transactionRoute,
+];

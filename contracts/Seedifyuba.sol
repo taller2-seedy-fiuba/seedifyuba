@@ -352,11 +352,7 @@ contract Seedifyuba is Ownable {
         Only owner can cancel projects
         @param projectId Should be an existing projectId
     */
-    function cancelProject(uint256 projectId)
-        public
-        projectExists(projectId)
-        onlyProjectOwner(projectId)
-    {
+    function cancelProject(uint256 projectId) public projectExists(projectId) onlyProjectOwner(projectId) {
         Project storage project = projects[projectId];
         project.state = State.CANCELED;
         emit ProjectCanceled(projectId);

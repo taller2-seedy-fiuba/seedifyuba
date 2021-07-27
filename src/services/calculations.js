@@ -18,7 +18,6 @@ const fromWeiToEther = bigNumber => {
 const fromEtherToMilli = number => {
   const MILLIST_IN_UNIT = BigNumber(10).pow(3);
   return BigNumber(number).times(MILLIST_IN_UNIT).toNumber();
-}
+};
 
-
-module.exports = {fromMilliToEther, toWei, fromWeiToEther, fromEtherToMilli}
+module.exports = { fromMilliToEther, toWei, fromWeiToEther, fromEtherToMilli };

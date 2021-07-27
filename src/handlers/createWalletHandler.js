@@ -5,14 +5,14 @@ const bodyJsonSchema = {
     ownerId: {
       type: "string",
     },
-  }
-}
+  },
+};
 
 function schema() {
   return {
-    body: bodyJsonSchema
+    body: bodyJsonSchema,
   };
-};
+}
 
 function handler({ walletService }) {
   return async function (req, reply) {

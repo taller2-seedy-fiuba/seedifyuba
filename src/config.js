@@ -1,5 +1,5 @@
 require("dotenv").config();
-const host = process.env.HOST || 'localhost';
+const host = process.env.HOST || "localhost";
 const port = process.env.PORT || 5000;
 const network = "kovan";
 const deployArtifact = require(`../deployments/${network}/Seedifyuba`);

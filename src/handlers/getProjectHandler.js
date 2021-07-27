@@ -1,16 +1,16 @@
 const queryStringJsonSchema = {
-  type: 'object',
+  type: "object",
   properties: {
-    source: { type: 'string' }
-  }
-}
+    source: { type: "string" },
+  },
+};
 
 const paramsJsonSchema = {
-  type: 'object',
+  type: "object",
   properties: {
-    hash: { type: 'string' }
-  }
-}
+    hash: { type: "string" },
+  },
+};
 
 function schema() {
   return {
@@ -23,12 +23,13 @@ function handler({ contractInteraction, walletService }) {
   return async function (req, reply) {
     const deployerWallet = await walletService.getDeployerWallet();
     const body = await contractInteraction.getProject(req.params.hash, req.query.source, deployerWallet);
-    if(!body) reply.code(404).send({
-      status: 'FAILURE',
-      code: 'PROJECT_NOT_FOUND',
-      message: 'Project with hash [' +req.params.hash+ '] not found',
-      statusCode: 404
-    });
+    if (!body)
+      reply.code(404).send({
+        status: "FAILURE",
+        code: "PROJECT_NOT_FOUND",
+        message: "Project with hash [" + req.params.hash + "] not found",
+        statusCode: 404,
+      });
     reply.code(200).send(body);
   };
 }

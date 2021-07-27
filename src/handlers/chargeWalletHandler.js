@@ -1,9 +1,9 @@
 const paramsJsonSchema = {
-  type: 'object',
+  type: "object",
   properties: {
-    user_id: { type: 'string' }
-  }
-}
+    user_id: { type: "string" },
+  },
+};
 
 const bodyJsonSchema = {
   type: "object",
@@ -11,14 +11,14 @@ const bodyJsonSchema = {
   properties: {
     amount: {
       type: "integer",
-    }
-  }
-}
+    },
+  },
+};
 
 function schema() {
   return {
     params: paramsJsonSchema,
-    body: bodyJsonSchema
+    body: bodyJsonSchema,
   };
 }
 
