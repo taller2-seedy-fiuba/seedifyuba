@@ -34,22 +34,20 @@ const createProject = ({ config }) => async (
   console.log("Total Amount Needed [" + totalAmountNeeded + "]");
   const costs = stagesCost.map(calculations.fromMilliToEther).map(calculations.toWei);
   console.log("Final Costs [" + costs + "]");
-  const tx = await seedyFiuba.createProject(costs, projectOwnerAddress, projectReviewerAddress)
-        .catch(async err => {
-          console.error('Failure run tx');
-          console.error(err);
-          throw err;
-      });
-  const receipt = await tx.wait(1)
-      .catch(async err => {
-      console.error(`Receipt failure in tx ${tx.hash}`);
-      console.error(err);
-      });
+  const tx = await seedyFiuba.createProject(costs, projectOwnerAddress, projectReviewerAddress).catch(async err => {
+    console.error("Failure run tx");
+    console.error(err);
+    throw err;
+  });
+  const receipt = await tx.wait(1).catch(async err => {
+    console.error(`Receipt failure in tx ${tx.hash}`);
+    console.error(err);
+  });
   const receipt = await tx.wait(1);
   console.log("Transaction mined");
   console.log(tx);
   const firstEvent = receipt && receipt.events && receipt.events[0];
-  console.log('First Event');
+  console.log("First Event");
   console.log(firstEvent);
   if (firstEvent && firstEvent.event == "ProjectCreated") {
     const projectId = firstEvent.args.projectId.toNumber();
@@ -172,14 +170,12 @@ const fundProject = ({ config }) => async (funderWallet, projectId, founds) => {
   const seedyFiuba = await getContract(config, funderWallet);
   const weisFunds = calculations.toWei(calculations.fromMilliToEther(founds));
   console.log("Weis funds [" + weisFunds + "]");
-  const tx = await seedyFiuba.fund(projectId, { value: weisFunds })
-        .catch(async err => {
-          console.error('Failure run tx');
-          console.error(err);
-          throw err;
-      });
-  const receipt = await tx.wait(1)
-  .catch(async err => {
+  const tx = await seedyFiuba.fund(projectId, { value: weisFunds }).catch(async err => {
+    console.error("Failure run tx");
+    console.error(err);
+    throw err;
+  });
+  const receipt = await tx.wait(1).catch(async err => {
     console.error(`Receipt failure in tx ${tx.hash}`);
     console.error(err);
   });
@@ -242,17 +238,15 @@ const fundProject = ({ config }) => async (funderWallet, projectId, founds) => {
 const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projectId, completedStage) => {
   console.log("Completed stage [" + completedStage + "] of project with id [" + projectId + "]");
   const seedyFiuba = await getContract(config, reviewerWallet);
-  const tx = await seedyFiuba.setCompletedStage(projectId, completedStage, { gasLimit: 100000 })
-        .catch(async err => {
-          console.error('Failure run tx');
-          console.error(err);
-          throw err;
-        });
-  const receipt = await tx.wait(1)
-        .catch(async err => {
-          console.error(`Receipt failure in tx ${tx.hash}`);
-          console.error(err);
-        });
+  const tx = await seedyFiuba.setCompletedStage(projectId, completedStage, { gasLimit: 100000 }).catch(async err => {
+    console.error("Failure run tx");
+    console.error(err);
+    throw err;
+  });
+  const receipt = await tx.wait(1).catch(async err => {
+    console.error(`Receipt failure in tx ${tx.hash}`);
+    console.error(err);
+  });
   console.log("Transaction mined");
   console.log(tx);
   const firstEvent = receipt && receipt.events && receipt.events[0];

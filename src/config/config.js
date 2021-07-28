@@ -7,7 +7,7 @@ const app = {
   },
   services: {
     api: {
-      baseurl: process.env.SERVICES_BASEURL || 'http://localhost:8000',
+      baseurl: process.env.SERVICES_BASEURL || "http://localhost:8000",
     },
   },
 };
