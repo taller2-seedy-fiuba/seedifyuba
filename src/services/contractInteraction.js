@@ -43,7 +43,6 @@ const createProject = ({ config }) => async (
     console.error(`Receipt failure in tx ${tx.hash}`);
     console.error(err);
   });
-  const receipt = await tx.wait(1);
   console.log("Transaction mined");
   console.log(tx);
   const firstEvent = receipt && receipt.events && receipt.events[0];
