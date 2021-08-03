@@ -258,12 +258,19 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
     const projectId = firstEvent.args.projectId.toNumber();
     const stageCompleted = firstEvent.args.stageCompleted.toNumber();
     console.log("Staged [" + stageCompleted + "] completed in project with id [" + projectId + "]");
-    if (secondEvent && secondEvent.event == "ProjectCompleted") {
-      const projectId = firstEvent.args.projectId.toNumber();
-      console.log("Project with id [" + projectId + "] is completed");
-    }
     const projectSC = await seedyFiuba.projects(projectId);
     const project = contractAdapter.adaptProjectFromSC(projectSC);
+    if (secondEvent && secondEvent.event == "ProjectCompleted") {
+      console.log("Project with id [" + projectId + "] is completed");
+      transactions.logTransaction(
+        tx.hash,
+        transactionStatus.SUCCESS,
+        project.owner,
+        projectId,
+        transactionMessage.PROJECT_COMPLETED,
+        transactionFlow.IN,
+      );
+    }
     const updates = {
       projectId: projectId,
       state: project.state,

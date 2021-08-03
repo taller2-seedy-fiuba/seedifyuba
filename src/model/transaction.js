@@ -12,6 +12,7 @@ const transactionMessage = {
   STAGE_NOT_COMPLETED: "Stage not completed",
   PROJECT_CANCELED: "Project canceled",
   PROJECT_NOT_CANCELED: "Project not canceled",
+  PROJECT_COMPLETED: "Project completed",
   AMOUNT_RECEIVED: "Amount received",
   AMOUNT_SENT: "Amount sent",
 };
