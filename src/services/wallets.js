@@ -105,35 +105,33 @@ const transfer = ({ config }) => async (sender, receiverAddress, amount) => {
     to: receiverAddress,
     value: ethers.utils.parseEther(amountInEthers),
   };
-  const sendPromise = sender.sendTransaction(tx);
-  sendPromise.then(tx => {
-    console.log("Successful Transaction");
-    console.log(tx);
-    transactions.logTransaction(
-      tx.hash,
-      transactionStatus.SUCCESS,
-      sender.address,
-      null,
-      transactionMessage.AMOUNT_SENT,
-      transactionFlow.OUT,
-    );
-    transactions.logTransaction(
-      tx.hash,
-      transactionStatus.SUCCESS,
-      receiverAddress,
-      null,
-      transactionMessage.AMOUNT_RECEIVED,
-      transactionFlow.IN,
-    );
-    return {
-      hast: tx.hash,
-      status: transactionStatus.SUCCESS,
-      address: sender.address,
-      project_id: null,
-      message: transactionMessage.AMOUNT_SENT,
-      flow: transactionFlow.OUT,
-    };
-  });
+  const sendTx = await sender.sendTransaction(tx);
+  console.log("Successful Transaction");
+  console.log(sendTx);
+  transactions.logTransaction(
+    sendTx.hash,
+    transactionStatus.SUCCESS,
+    sender.address,
+    null,
+    transactionMessage.AMOUNT_SENT,
+    transactionFlow.OUT,
+  );
+  transactions.logTransaction(
+    sendTx.hash,
+    transactionStatus.SUCCESS,
+    receiverAddress,
+    null,
+    transactionMessage.AMOUNT_RECEIVED,
+    transactionFlow.IN,
+  );
+  return {
+    hast: sendTx.hash,
+    status: transactionStatus.SUCCESS,
+    address: sender.address,
+    project_id: null,
+    message: transactionMessage.AMOUNT_SENT,
+    flow: transactionFlow.OUT,
+  };
 };
 
 module.exports = ({ config }) => ({
