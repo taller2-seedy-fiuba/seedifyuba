@@ -72,6 +72,7 @@ const convertTx = txDBO => {
     project_id: txDBO["project_id"],
     timestamp: txDBO["timestamp"],
     flow: txDBO["flow"],
+    amount: txDBO["amount"]
   };
 };
 
