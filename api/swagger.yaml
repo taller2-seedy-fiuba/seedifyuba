@@ -147,7 +147,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Carga de la wallet
+        description: Informacion de la Carga a la wallet
         content:
           application/json:
             schema:
@@ -179,7 +179,7 @@ paths:
       description: Crea un proyecto en el SC y lo ingresa en el sistema persistiendo toda su informacion.
       operationId: createProject
       requestBody:
-        description: Datos del usuario propietario o emprendedor del proyecto
+        description: Datos del usuario propietario o emprendedor del proyecto, revisor y cantidad de etapas del proyecto.
         content:
           application/json:
             schema:
@@ -257,7 +257,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Datos del usuario patrocinador del proyecto
+        description: Datos del usuario emprendedor o propietario del proyecto, estado del proyecto a actualizar.
         content:
           application/json:
             schema:
@@ -303,7 +303,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Datos del usuario patrocinador del proyecto
+        description: Datos del usuario patrocinador del proyecto, cantidad de fondos a aportar al proyecto
         content:
           application/json:
             schema:
@@ -348,7 +348,7 @@ paths:
           schema:
             type: string
       requestBody:
-        description: Datos del usuario propietario de la nueva Wallet
+        description: Datos del usuario veedor del proyecto y etapa a completar.
         content:
           application/json:
             schema:
@@ -508,6 +508,10 @@ components:
           description: Nombre de Usuario Patrocinador. Identificador unico de cada Usuario.
           type: string
           example: 'usuario1'
+        funds:
+          description: Cantidad de fondos a aportar al proyecto
+          type: integer
+          example: 1000
     ReviewerInputDTO:
       type: object
       properties:
@@ -515,6 +519,10 @@ components:
           description: Nombre de Usuario Veedor. Identificador unico de cada Usuario.
           type: string
           example: 'usuario1'
+        stage_completed: 
+          description: Etapa a completar del proyecto. La primera etapa es la etapa 0, la segunda 1 y asi.
+          type: integer
+          example: 0
     WalletDTO:
       type: object
       properties:
