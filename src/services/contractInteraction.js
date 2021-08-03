@@ -72,6 +72,7 @@ const createProject = ({ config }) => async (
       projectId,
       transactionMessage.PROJECT_CREATED,
       transactionFlow.OUT,
+      null
     );
     transactions.logTransaction(
       tx.hash,
@@ -80,6 +81,7 @@ const createProject = ({ config }) => async (
       projectId,
       transactionMessage.PROJECT_CREATED,
       transactionFlow.OUT,
+      null
     );
     return {
       hast: tx.hash,
@@ -100,6 +102,7 @@ const createProject = ({ config }) => async (
       null,
       message,
       transactionFlow.OUT,
+      null
     );
     transactions.logTransaction(
       tx.hash,
@@ -108,6 +111,7 @@ const createProject = ({ config }) => async (
       null,
       message,
       transactionFlow.OUT,
+      null
     );
     throw {
       status: "FAILURE",
@@ -204,6 +208,7 @@ const fundProject = ({ config }) => async (funderWallet, projectId, founds) => {
       projectId,
       transactionMessage.PROJECT_FUNDED,
       transactionFlow.OUT,
+      founds
     );
     return {
       hast: tx.hash,
@@ -224,6 +229,7 @@ const fundProject = ({ config }) => async (funderWallet, projectId, founds) => {
       projectId,
       message,
       transactionFlow.OUT,
+      null
     );
     throw {
       status: "FAILURE",
@@ -262,6 +268,7 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
     const project = contractAdapter.adaptProjectFromSC(projectSC);
     if (secondEvent && secondEvent.event == "ProjectCompleted") {
       console.log("Project with id [" + projectId + "] is completed");
+      const projectDB = await projectDao.selectById(projectId);
       transactions.logTransaction(
         tx.hash,
         transactionStatus.SUCCESS,
@@ -269,6 +276,7 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
         projectId,
         transactionMessage.PROJECT_COMPLETED,
         transactionFlow.IN,
+        projectDB.totalAmountNeeded
       );
     }
     const updates = {
@@ -285,6 +293,7 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
       projectId,
       transactionMessage.STAGE_COMPLETED,
       transactionFlow.OUT,
+      null
     );
     return {
       hast: tx.hash,
@@ -305,6 +314,7 @@ const setCompletedStageOfProject = ({ config }) => async (reviewerWallet, projec
       projectId,
       message,
       transactionFlow.OUT,
+      null
     );
     throw {
       status: "FAILURE",
@@ -344,6 +354,7 @@ const cancelProject = ({ config }) => async (ownerWallet, projectId) => {
       projectId,
       transactionMessage.PROJECT_CANCELED,
       transactionFlow.OUT,
+      null
     );
     return {
       hast: tx.hash,
@@ -364,6 +375,7 @@ const cancelProject = ({ config }) => async (ownerWallet, projectId) => {
       projectId,
       message,
       transactionFlow.OUT,
+      null
     );
     throw {
       status: "FAILURE",

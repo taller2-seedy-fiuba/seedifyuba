@@ -75,6 +75,7 @@ const chargeWallet = ({ config }) => async (id, amount) => {
       null,
       transactionMessage.AMOUNT_SENT,
       transactionFlow.OUT,
+      amount
     );
     transactions.logTransaction(
       tx.hash,
@@ -83,6 +84,7 @@ const chargeWallet = ({ config }) => async (id, amount) => {
       null,
       transactionMessage.AMOUNT_RECEIVED,
       transactionFlow.IN,
+      amount
     );
     return {
       hast: tx.hash,
@@ -115,6 +117,7 @@ const transfer = ({ config }) => async (sender, receiverAddress, amount) => {
     null,
     transactionMessage.AMOUNT_SENT,
     transactionFlow.OUT,
+    amount
   );
   transactions.logTransaction(
     sendTx.hash,
@@ -123,6 +126,7 @@ const transfer = ({ config }) => async (sender, receiverAddress, amount) => {
     null,
     transactionMessage.AMOUNT_RECEIVED,
     transactionFlow.IN,
+    amount
   );
   return {
     hast: sendTx.hash,

@@ -16,7 +16,7 @@ const getTransaction = async (address, hash) => {
   return transaction;
 };
 
-const logTransaction = async (hash, status, address, projectId, message, flow) => {
+const logTransaction = async (hash, status, address, projectId, message, flow, amount) => {
   console.log(
     "Transaction with hash [" +
       hash +
@@ -30,7 +30,9 @@ const logTransaction = async (hash, status, address, projectId, message, flow) =
       message +
       "] flow [" +
       flow +
-      "]",
+      "] amount [" +
+      amount +
+      "]" 
   );
   const tx = {
     hash: hash,
@@ -40,6 +42,7 @@ const logTransaction = async (hash, status, address, projectId, message, flow) =
     message: message,
     timestamp: new Date(),
     flow: flow,
+    amount: amount
   };
   await transactionDao.insert(tx);
 };
